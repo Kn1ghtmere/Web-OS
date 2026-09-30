@@ -2,6 +2,11 @@ import japan from '../../assets/backgrounds/japan.jpg';
 import lain from '../../assets/backgrounds/lain.jpg';
 import mountains from '../../assets/backgrounds/oled-mountains.jpg';
 import balcony from '../../assets/backgrounds/Balcony-ja.png';
+import pink_scenery from '../../assets/backgrounds/moewanders-the-frontier.jpg'
+import gruvbox from "../../assets/backgrounds/gruvbox_witcher.png"
+import yellow from "../../assets/backgrounds/yellow_kyoto.jpg"
+import lain2 from "../../assets/backgrounds/lain2.jpg"
+import bisbis from "../../assets/backgrounds/bisbiswas-gathering.jpg"
 export interface Wallpaper {
    id: string;
    name: string;
@@ -14,6 +19,12 @@ export const wallpapers: Wallpaper[] = [
   { id: 'lain', name: 'Lain', src: lain },
 { id: 'mountains', name: 'OLED Mountains', src: mountains },
   { id: 'balcony', name: 'Balcony', src: balcony },
+  {id:'pink',name:"Pink Scenery",src:pink_scenery},
+  {id:'gruvbox',name:"Gruvbox",src:gruvbox},
+  {id:"yellow",name:"Yellow",src:yellow},
+  {id:"lain 2",name:"one more lain",src:lain2},
+  {id:"bisbis",name:"bis bis idk",src:bisbis}
+
 ];
 
 export interface SettingsState {
