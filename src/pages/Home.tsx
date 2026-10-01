@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
+
 import calcIcon from '../assets/icons/calc.svg';
 import calendarIcon from '../assets/icons/calendar.svg';
 import fileManagerIcon from '../assets/icons/file-manager.svg';
@@ -7,20 +8,28 @@ import musicIcon from '../assets/icons/gnome-music.svg';
 import todoIcon from '../assets/icons/gnome-todo.svg';
 import settingsIcon from '../assets/icons/settings-icon.svg';
 import terminalIcon from '../assets/icons/terminal.svg';
+
 import Settings from './Settings';
+
 import {
   wallpapers,
   defaultSettings,
   loadSettings,
   saveSettings,
 } from '../components/settings/SettingsConfig';
-import type { SettingsState } from '../components/settings/SettingsConfig';
+
+import type { SettingsState } from '../components/settings/settingsConfig';
 
 interface DockItem {
   id: string;
   label: string;
   icon: string;
 }
+
+type WindowId = 'settings' | 'calc' | 'music';
+
+const isWindowId = (id: string): id is WindowId =>
+  id === 'settings' || id === 'calc' || id === 'music';
 
 const dockItems: DockItem[] = [
   { id: 'file-manager', label: 'Files', icon: fileManagerIcon },
@@ -34,9 +43,10 @@ const dockItems: DockItem[] = [
 
 export default function Home() {
   const [settings, setSettings] = useState<SettingsState>(loadSettings);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [openWindows, setOpenWindows] = useState<WindowId[]>([]);
   const [scales, setScales] = useState<number[]>(dockItems.map(() => 1));
   const [hovered, setHovered] = useState<number | null>(null);
+
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -46,7 +56,26 @@ export default function Home() {
   const updateSettings = (patch: Partial<SettingsState>) =>
     setSettings((prev) => ({ ...prev, ...patch }));
 
-  const wallpaper = wallpapers.find((w) => w.id === settings.wallpaper) ?? wallpapers[0];
+  const bringToFront = (id: WindowId) =>
+    setOpenWindows((prev) =>
+      prev[prev.length - 1] === id ? prev : [...prev.filter((w) => w !== id), id]
+    );
+
+  const closeWindow = (id: WindowId) =>
+    setOpenWindows((prev) => prev.filter((w) => w !== id));
+
+  const topWindow = openWindows[openWindows.length - 1];
+
+  const handleItemClick = (id: string) => {
+    if (!isWindowId(id)) return;
+
+    if (!openWindows.includes(id) || topWindow !== id) bringToFront(id);
+    else closeWindow(id);
+  };
+
+  const wallpaper =
+    wallpapers.find((w) => w.id === settings.wallpaper) ?? wallpapers[0];
+
   const iconSize = settings.iconSize;
   const gap = Math.round(iconSize * 0.32);
   const maxDist = iconSize * 2.7;
@@ -54,13 +83,18 @@ export default function Home() {
 
   const handleMouseMove = (e: ReactMouseEvent<HTMLDivElement>) => {
     if (!settings.magnification) return;
+
     setScales(
       dockItems.map((_, i) => {
         const el = itemRefs.current[i];
         if (!el) return 1;
+
         const rect = el.getBoundingClientRect();
         const distance = Math.abs(e.clientX - (rect.left + rect.width / 2));
-        return distance < maxDist ? 1 + amount * Math.pow(1 - distance / maxDist, 2) : 1;
+
+        return distance < maxDist
+          ? 1 + amount * Math.pow(1 - distance / maxDist, 2)
+          : 1;
       })
     );
   };
@@ -70,134 +104,92 @@ export default function Home() {
     setHovered(null);
   };
 
-  const handleItemClick = (id: string) => {
-    if (id === 'settings') setSettingsOpen((open) => !open);
-  };
-
   return (
     <div
+      className="fixed inset-0 overflow-hidden text-left font-sans text-white"
       style={{
-        position: 'fixed',
-        inset: 0,
-        overflow: 'hidden',
         backgroundImage: `url(${wallpaper.src})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif',
-        color: '#fff',
-        textAlign: 'left',
       }}
     >
-      {settingsOpen && (
+      {openWindows.includes('settings') && (
         <Settings
           settings={settings}
           onChange={updateSettings}
           onReset={() => setSettings(defaultSettings)}
-          onClose={() => setSettingsOpen(false)}
+          onClose={() => closeWindow('settings')}
+          zIndex={10 + openWindows.indexOf('settings')}
+          onFocus={() => bringToFront('settings')}
         />
       )}
 
-      <div
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 12,
-          display: 'flex',
-          justifyContent: 'center',
-          zIndex: 20,
-          pointerEvents: 'none',
-        }}
-      >
-   <div
+    
+
+      <div className="pointer-events-none absolute bottom-3 left-0 right-0 z-[1000] flex justify-center">
+        <div
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
+          className="pointer-events-auto flex items-end rounded-[26px] border border-white/30 px-[18px] pb-[14px] pt-[10px] shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-[16px]"
           style={{
-                  pointerEvents: 'auto',
-            display: 'flex',
-            alignItems: 'flex-end',
-            gap,     padding: '10px 18px 14px',   borderRadius: 26,
-            background: `rgba(255,255,255,${settings.dockOpacity / 100})`,  backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)', boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
+            gap,
+            background: `rgba(255,255,255,${settings.dockOpacity / 100})`,
+            WebkitBackdropFilter: 'blur(16px)',
           }}
         >
           {dockItems.map((item, i) => {
             const scale = settings.magnification ? scales[i] : 1;
-            const isSettings = item.id === 'settings';
+            const clickable = isWindowId(item.id);
+            const open = isWindowId(item.id) && openWindows.includes(item.id);
+
             return (
               <div
-                key={item.id}   ref={(el) => {    
-                   itemRefs.current[i] = el;
+                key={item.id}
+                ref={(el) => {
+                  itemRefs.current[i] = el;
                 }}
                 onClick={() => handleItemClick(item.id)}
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}
+                className={`relative ${clickable ? 'cursor-pointer' : 'cursor-default'}`}
                 style={{
-                  position: 'relative',
                   width: iconSize,
                   height: iconSize,
-                  cursor: isSettings ? 'pointer' : 'default',
                 }}
               >
                 {settings.showLabels && hovered === i && (
                   <span
+                    className="pointer-events-none absolute left-1/2 whitespace-nowrap rounded-md bg-[rgba(20,20,25,0.85)] px-[10px] py-1 text-xs text-white"
                     style={{
-                      position: 'absolute',
                       bottom: iconSize * scale + 12,
-                      left: '50%',
                       transform: 'translateX(-50%)',
-                      background: 'rgba(20,20,25,0.85)',
-                      color: '#fff',
-                      fontSize: 12,
-                      padding: '4px 10px',
-                      borderRadius: 6,
-                      whiteSpace: 'nowrap',
-                      pointerEvents: 'none',
                     }}
                   >
                     {item.label}
                   </span>
                 )}
+
                 <img
                   src={item.icon}
                   alt={item.label}
                   draggable={false}
+                  className="block object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.35)] transition-transform duration-100 ease-out"
                   style={{
-                    display: 'block',
                     width: iconSize,
                     height: iconSize,
-                    objectFit: 'contain',
                     transform: `scale(${scale})`,
                     transformOrigin: 'bottom center',
-                    transition: 'transform 100ms ease-out',
-
-
-
-                    filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.35))',
                   }}
                 />
-                {isSettings && settingsOpen && (
-                  <span
-                    style={{
-                      position: 'absolute',
-                      bottom: -9,
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      width: 5,
-                      height: 5,
-                      borderRadius: '50%',
-                      background: '#fff',
-                    }}
-                  />
+
+                {open && (
+                  <span className="absolute bottom-[-9px] left-1/2 h-[5px] w-[5px] -translate-x-1/2 rounded-full bg-white" />
                 )}
               </div>
             );
           })}
-          
         </div>
-
-
       </div>
     </div>
   );
