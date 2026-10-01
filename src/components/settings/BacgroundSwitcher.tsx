@@ -1,3 +1,4 @@
+
 import { wallpapers } from './SettingsConfig';
 
 interface BackgroundSwitcherProps {
@@ -7,42 +8,26 @@ interface BackgroundSwitcherProps {
 
 export default function BackgroundSwitcher({ value, onChange }: BackgroundSwitcherProps) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+    <div className="grid grid-cols-2 gap-3">
       {wallpapers.map((wallpaper) => {
         const active = wallpaper.id === value;
+
         return (
           <button
             key={wallpaper.id}
             onClick={() => onChange(wallpaper.id)}
-            style={{
-              position: 'relative',
-              padding: 0,
-              overflow: 'hidden',
-              cursor: 'pointer',
-              background: 'none',
-              borderRadius: 12,
-              border: active ? '2px solid #3b82f6' : '2px solid transparent',
-            }}
+            className={`relative cursor-pointer overflow-hidden rounded-xl border-2 bg-transparent p-0 ${
+              active ? 'border-[#3b82f6]' : 'border-transparent'
+            }`}
           >
             <img
               src={wallpaper.src}
               alt={wallpaper.name}
               draggable={false}
-              style={{ display: 'block', width: '100%', height: 110, objectFit: 'cover' }}
+              className="block h-[110px] w-full object-cover"
             />
-            <span
-              style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                bottom: 0,
-                padding: '14px 10px 6px',
-                fontSize: 12,
-                textAlign: 'left',
-                color: '#fff',
-                background: 'linear-gradient(transparent, rgba(0,0,0,0.75))',
-              }}
-            >
+
+            <span className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[rgba(0,0,0,0.75)] to-transparent px-[10px] pb-[6px] pt-[14px] text-left text-xs text-white">
               {wallpaper.name}
               {active ? ' ✓' : ''}
             </span>

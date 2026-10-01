@@ -1,4 +1,5 @@
 import japan from '../../assets/backgrounds/japan.jpg';
+
 import lain from '../../assets/backgrounds/lain.jpg';
 import mountains from '../../assets/backgrounds/oled-mountains.jpg';
 import balcony from '../../assets/backgrounds/Balcony-ja.png';
@@ -7,6 +8,8 @@ import gruvbox from "../../assets/backgrounds/gruvbox_witcher.png"
 import yellow from "../../assets/backgrounds/yellow_kyoto.jpg"
 import lain2 from "../../assets/backgrounds/lain2.jpg"
 import bisbis from "../../assets/backgrounds/bisbiswas-gathering.jpg"
+import { TbChevronDownFilled } from 'react-icons/tb';
+
 export interface Wallpaper {
    id: string;
    name: string;
@@ -23,7 +26,8 @@ export const wallpapers: Wallpaper[] = [
   {id:'gruvbox',name:"Gruvbox",src:gruvbox},
   {id:"yellow",name:"Yellow",src:yellow},
   {id:"lain 2",name:"one more lain",src:lain2},
-  {id:"bisbis",name:"bis bis idk",src:bisbis}
+  {id:"bisbis",name:"bis bis idk",src:bisbis},
+
 
 ];
 
@@ -36,8 +40,9 @@ export interface SettingsState {
   dockOpacity: number;
 }
 
+
 export const defaultSettings: SettingsState = {
-  wallpaper: 'japan',
+  wallpaper: 'gruvbox',
   iconSize: 56,
   magnification: true,
   magnificationAmount: 50,
