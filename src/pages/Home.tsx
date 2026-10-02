@@ -5,12 +5,13 @@ import calcIcon from '../assets/icons/calc.svg';
 import calendarIcon from '../assets/icons/calendar.svg';
 import fileManagerIcon from '../assets/icons/file-manager.svg';
 import musicIcon from '../assets/icons/gnome-music.svg';
-import todoIcon from '../assets/icons/gnome-todo.svg';
+import notesIcon from '../assets/icons/gnome-todo.svg';
 import settingsIcon from '../assets/icons/settings-icon.svg';
 import terminalIcon from '../assets/icons/terminal.svg';
 
 import Settings from './Settings';
 import MusicPlayer from './MusicPlayer';
+import Notes from './Notes';
 
 import {
   wallpapers,
@@ -27,15 +28,15 @@ interface DockItem {
   icon: string;
 }
 
-type WindowId = 'settings' | 'calc' | 'music';
+type WindowId = 'settings' | 'music' | 'notes';
 
 const isWindowId = (id: string): id is WindowId =>
-  id === 'settings' || id === 'calc' || id === 'music';
+  id === 'settings' || id === 'music' || id === 'notes';
 
 const dockItems: DockItem[] = [
   { id: 'file-manager', label: 'Files', icon: fileManagerIcon },
   { id: 'terminal', label: 'Terminal', icon: terminalIcon },
-  { id: 'todo', label: 'To-Do', icon: todoIcon },
+  { id: 'notes', label: 'Notes', icon: notesIcon },
   { id: 'music', label: 'Music', icon: musicIcon },
   { id: 'calc', label: 'Calculator', icon: calcIcon },
   { id: 'calendar', label: 'Calendar', icon: calendarIcon },
@@ -126,12 +127,19 @@ export default function Home() {
         />
       )}
 
-    
       {openWindows.includes('music') && (
         <MusicPlayer
           zIndex={10 + openWindows.indexOf('music')}
           onFocus={() => bringToFront('music')}
           onClose={() => closeWindow('music')}
+        />
+      )}
+
+      {openWindows.includes('notes') && (
+        <Notes
+          zIndex={10 + openWindows.indexOf('notes')}
+          onFocus={() => bringToFront('notes')}
+          onClose={() => closeWindow('notes')}
         />
       )}
 
