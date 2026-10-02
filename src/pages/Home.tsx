@@ -10,6 +10,7 @@ import settingsIcon from '../assets/icons/settings-icon.svg';
 import terminalIcon from '../assets/icons/terminal.svg';
 
 import Settings from './Settings';
+import MusicPlayer from './MusicPlayer';
 
 import {
   wallpapers,
@@ -18,7 +19,7 @@ import {
   saveSettings,
 } from '../components/settings/SettingsConfig';
 
-import type { SettingsState } from '../components/settings/settingsConfig';
+import type { SettingsState } from '../components/settings/SettingsConfig';
 
 interface DockItem {
   id: string;
@@ -126,6 +127,13 @@ export default function Home() {
       )}
 
     
+      {openWindows.includes('music') && (
+        <MusicPlayer
+          zIndex={10 + openWindows.indexOf('music')}
+          onFocus={() => bringToFront('music')}
+          onClose={() => closeWindow('music')}
+        />
+      )}
 
       <div className="pointer-events-none absolute bottom-3 left-0 right-0 z-[1000] flex justify-center">
         <div
