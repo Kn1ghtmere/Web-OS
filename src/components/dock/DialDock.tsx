@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { useRef } from "react";
 
 interface DialItem {
     id: string;
@@ -13,21 +13,25 @@ interface DialDockProps {
     onItemClick:(id: string) => void;
 
 }
-
 const STEP = (35 * Math.PI) / 180;
 
 export default function DialDock({ items, iconSize, onItemClick}: DialDockProps) {
 
     const [active, setActive] = useState(0);
     const [hovered, setHovered] = useState(false);
+    const lastStep = useRef(0)
+
 
     const n = items.length;
     const radius = hovered ? 150 : 90;
 
-    const handleWheel = (e: React.WheelEvent) => {
-        const dir = e.deltaY > 0 ? 1 : -1;
-        setActive((prev) => (prev + dir + n) % n);
-    };
+   const handleWheel = (e: React.WheelEvent) => {
+    const now = performance.now();
+    if (Math.abs(e.deltaY) < 4 || now - lastStep.current < 110) return;
+    lastStep.current = now;
+    const dir = e.deltaY > 0 ? 1 : -1;
+    setActive((prev) => (prev + dir + n) % n);
+};
 
     return (
         <div
@@ -60,13 +64,14 @@ export default function DialDock({ items, iconSize, onItemClick}: DialDockProps)
                 alt={item.label}
                 draggable={false}
                 onClick={() => (offset === 0 ? onItemClick(item.id) : setActive(i))}
-                className={`absolute max-w-none left-0 top-0 cursor-pointer object-contain transition-all duration-200 ${
+                className={`absolute max-w-none left-0 top-0 cursor-pointer object-contain ${
                 visible ? 'opacity-100' : 'pointer-events-none opacity-0'
                 }`}
                 style={{
                     width: iconSize,
                     height: iconSize,
                     transform: `translate(${x- iconSize /2}px, ${y - iconSize /2}px)`,
+                    transition: 'transform 360ms cubic-bezier(0.34, 1.56 , 0.64, 1), opacity 150ms ease-out',
                 }}
                 />
             );
