@@ -12,7 +12,7 @@ import terminalIcon from '../assets/icons/terminal.svg';
 import Settings from './Settings';
 import MusicPlayer from './MusicPlayer';
 import Notes from './Notes';
-
+import Calendar from './Calender';
 import {
   wallpapers,
   defaultSettings,
@@ -31,7 +31,7 @@ interface DockItem {
 type WindowId = 'settings' | 'music' | 'notes';
 
 const isWindowId = (id: string): id is WindowId =>
-  id === 'settings' || id === 'music' || id === 'notes';
+  id === 'settings' || id === 'music' || id === 'notes' || id==='calendar'
 
 const dockItems: DockItem[] = [
   { id: 'file-manager', label: 'Files', icon: fileManagerIcon },
@@ -143,6 +143,16 @@ export default function Home() {
         />
       )}
 
+      {openWindows.includes('calendar')&&(
+        <Calendar
+            zIndex={10+openWindows.indexOf('calendar')}
+            onFocus={()=>bringToFront('calendar')}
+            onClose={()=>closeWindow('calendar')}
+        />
+      )
+
+      }
+
       <div className="pointer-events-none absolute bottom-3 left-0 right-0 z-[1000] flex justify-center">
         <div
           onMouseMove={handleMouseMove}
@@ -210,3 +220,5 @@ export default function Home() {
     </div>
   );
 }
+
+
