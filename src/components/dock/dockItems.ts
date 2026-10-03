@@ -18,6 +18,7 @@ export const dockItems: DockItem[] = [
   { id: 'todo', label: 'To-Do', icon: todoIcon },
   { id: 'music', label: 'Music', icon: musicIcon },
   { id: 'calc', label: 'Calculator', icon: calcIcon },
-  { id: 'calendar', label: 'Calendar', icon: calendarIcon },
+  { id: 'Calendar', label: 'Calendar', icon: calendarIcon },
   { id: 'settings', label: 'Settings', icon: settingsIcon },
+  { id: 'notes' , label: 'Notes', icon: todoIcon},
 ];

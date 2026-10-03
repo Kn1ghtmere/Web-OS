@@ -3,8 +3,12 @@ import type { MouseEvent as ReactMouseEvent } from 'react';
 
 import {dockItems} from "../components/dock/dockItems";
 import DialDock from '../components/dock/DialDock';
- 
 import Settings from './Settings';
+import Notes from './Notes';
+import Calendar from './Calender';
+import MusicPlayer from './MusicPlayer';
+
+
 
 import {
   wallpapers,
@@ -16,10 +20,10 @@ import {
 import type { SettingsState } from '../components/settings/SettingsConfig';
 
 
-type WindowId = 'settings' | 'calc' | 'music';
+type WindowId = 'settings' | 'calc' | 'music' | 'notes' | 'Calendar';
 
 const isWindowId = (id: string): id is WindowId =>
-  id === 'settings' || id === 'calc' || id === 'music';
+  id === 'settings' || id === 'calc' || id === 'music' || id === 'notes' || id === 'Calendar';
 
 
 
@@ -104,6 +108,30 @@ export default function Home() {
           onClose={() => closeWindow('settings')}
           zIndex={10 + openWindows.indexOf('settings')}
           onFocus={() => bringToFront('settings')}
+        />
+      )}
+
+      {openWindows.includes('notes') && (
+        <Notes
+          zIndex={10 + openWindows.indexOf('notes')}
+          onFocus={() => bringToFront('notes')}
+          onClose={() => closeWindow('notes')}
+        />
+      )}
+
+      {openWindows.includes('Calendar') && (
+        <Calendar
+          zIndex={10 + openWindows.indexOf('Calendar')}
+          onFocus={() => bringToFront('Calendar')}
+          onClose={() => closeWindow('Calendar')}
+        />
+      )}
+
+      {openWindows.includes('music') && (
+        <MusicPlayer
+          zIndex={10 + openWindows.indexOf('music')}
+          onFocus={() => bringToFront('music')}
+          onClose={() => closeWindow('music')}
         />
       )}
 
