@@ -3,7 +3,7 @@ import type { MouseEvent as ReactMouseEvent } from 'react';
 
 import {dockItems} from "../components/dock/dockItems";
 import DialDock from '../components/dock/DialDock';
-
+ 
 import Settings from './Settings';
 
 import {
@@ -187,3 +187,5 @@ export default function Home() {
     </div>
   );
 }
+
+
