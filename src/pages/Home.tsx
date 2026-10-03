@@ -9,6 +9,7 @@ import todoIcon from '../assets/icons/gnome-todo.svg';
 import settingsIcon from '../assets/icons/settings-icon.svg';
 import terminalIcon from '../assets/icons/terminal.svg';
 import clock from '../assets/icons/clock.svg'
+import Clock from '../pages/Clock';
 
 import Settings from './Settings';
 
@@ -27,10 +28,10 @@ interface DockItem {
   icon: string;
 }
 
-type WindowId = 'settings' | 'calc' | 'music';
+type WindowId = 'settings' | 'calc' | 'music' | 'clock';
 
 const isWindowId = (id: string): id is WindowId =>
-  id === 'settings' || id === 'calc' || id === 'music';
+  id === 'settings' || id === 'calc' || id === 'music' || id === 'clock';
 
 const dockItems: DockItem[] = [
   { id: 'file-manager', label: 'Files', icon: fileManagerIcon },
@@ -117,6 +118,13 @@ export default function Home() {
         backgroundRepeat: 'no-repeat',
       }}
     >
+      {openWindows.includes('clock') && (
+  <Clock
+    onClose={() => closeWindow('clock')}
+    zIndex={10 + openWindows.indexOf('clock')}
+    onFocus={() => bringToFront('clock')}
+  />
+)}
       {openWindows.includes('settings') && (
         <Settings
           settings={settings}
