@@ -84,9 +84,11 @@ interface SettingsProps {
   onChange: (patch: Partial<SettingsState>) => void;
   onReset: () => void;
   onClose: () => void;
+  zIndex?: number;
+  onFocus?: () => void;
 }
 
-export default function Settings({ settings, onChange, onReset, onClose }: SettingsProps) {
+export default function Settings({ settings, onChange, onReset, onClose, zIndex , onFocus }: SettingsProps) {
   const [tab, setTab] = useState<Tab>('wallpaper');
   const [pos, setPos] = useState(() => ({
     x: Math.max(12, (window.innerWidth - WIDTH) / 2),
@@ -111,7 +113,8 @@ export default function Settings({ settings, onChange, onReset, onClose }: Setti
 
   return (
     <div
-      className="absolute z-10 flex flex-col overflow-hidden box-border rounded-xl border border-white/25 text-white shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+      onMouseDown={onFocus}
+      className="absolute flex flex-col overflow-hidden box-border rounded-xl border border-white/25 text-white shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
       style={{
         left: pos.x,
         top: pos.y,
@@ -119,6 +122,7 @@ export default function Settings({ settings, onChange, onReset, onClose }: Setti
         height: HEIGHT,
         maxWidth: 'calc(100vw - 24px)',
         maxHeight: 'calc(100vh - 24px)',
+        zIndex,
       }}
     >
       <div
@@ -178,6 +182,11 @@ export default function Settings({ settings, onChange, onReset, onClose }: Setti
               />
               <Row label="Show labels" hint="Name above an icon on hover">
                 <Toggle checked={settings.showLabels} onChange={(showLabels) => onChange({ showLabels })} />
+              </Row>
+              <Row label="Dial dock" hint="A circular dial dock at the edge of the screen">
+                <Toggle 
+                checked={settings.dockStyle === 'dial'}
+                onChange={(on) => onChange({ dockStyle: on ? 'dial' : 'bottom'})} />
               </Row>
               <SliderRow
                 label="Dock transparency"

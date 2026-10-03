@@ -8,7 +8,6 @@ import gruvbox from "../../assets/backgrounds/gruvbox_witcher.png"
 import yellow from "../../assets/backgrounds/yellow_kyoto.jpg"
 import lain2 from "../../assets/backgrounds/lain2.jpg"
 import bisbis from "../../assets/backgrounds/bisbiswas-gathering.jpg"
-import { TbChevronDownFilled } from 'react-icons/tb';
 
 export interface Wallpaper {
    id: string;
@@ -38,6 +37,7 @@ export interface SettingsState {
  magnificationAmount: number;
   showLabels: boolean;
   dockOpacity: number;
+  dockStyle: 'bottom' | 'dial';
 }
 
 
@@ -48,6 +48,7 @@ export const defaultSettings: SettingsState = {
   magnificationAmount: 50,
   showLabels: true,
   dockOpacity: 20,
+  dockStyle: 'bottom',
 };
 const STORAGE_KEY = 'webos-settings';
 export function loadSettings(): SettingsState {

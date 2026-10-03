@@ -1,14 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
 
-import calcIcon from '../assets/icons/calc.svg';
-import calendarIcon from '../assets/icons/calendar.svg';
-import fileManagerIcon from '../assets/icons/file-manager.svg';
-import musicIcon from '../assets/icons/gnome-music.svg';
-import todoIcon from '../assets/icons/gnome-todo.svg';
-import settingsIcon from '../assets/icons/settings-icon.svg';
-import terminalIcon from '../assets/icons/terminal.svg';
-import clock from '../assets/icons/clock.svg'
+import {dockItems} from "../components/dock/dockItems";
+import DialDock from '../components/dock/DialDock';
 
 import Settings from './Settings';
 
@@ -19,30 +13,15 @@ import {
   saveSettings,
 } from '../components/settings/SettingsConfig';
 
-import type { SettingsState } from '../components/settings/settingsConfig';
+import type { SettingsState } from '../components/settings/SettingsConfig';
 
-interface DockItem {
-  id: string;
-  label: string;
-  icon: string;
-}
 
 type WindowId = 'settings' | 'calc' | 'music';
 
 const isWindowId = (id: string): id is WindowId =>
   id === 'settings' || id === 'calc' || id === 'music';
 
-const dockItems: DockItem[] = [
-  { id: 'file-manager', label: 'Files', icon: fileManagerIcon },
-  { id: 'terminal', label: 'Terminal', icon: terminalIcon },
-  { id: 'todo', label: 'To-Do', icon: todoIcon },
-   { id: 'clock', label: 'Clock', icon: clock},
-  { id: 'music', label: 'Music', icon: musicIcon },
-  { id: 'calc', label: 'Calculator', icon: calcIcon },
-  { id: 'calendar', label: 'Calendar', icon: calendarIcon },
-  { id: 'settings', label: 'Settings', icon: settingsIcon },
- 
-];
+
 
 export default function Home() {
   const [settings, setSettings] = useState<SettingsState>(loadSettings);
@@ -128,7 +107,17 @@ export default function Home() {
         />
       )}
 
-    
+      
+      
+      {settings.dockStyle ==='dial' && (
+        <DialDock
+         items={dockItems}
+         iconSize={iconSize}
+         onItemClick={handleItemClick}
+         />
+      )}
+      
+    {settings.dockStyle === 'bottom' && (
 
       <div className="pointer-events-none absolute bottom-3 left-0 right-0 z-[1000] flex justify-center">
         <div
@@ -194,6 +183,7 @@ export default function Home() {
           })}
         </div>
       </div>
+      )}
     </div>
   );
 }
