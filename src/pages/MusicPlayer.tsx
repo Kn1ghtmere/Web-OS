@@ -231,7 +231,6 @@ export default function MusicPlayer({ zIndex, onFocus, onMinimize, onClose }: Mu
           <iframe
           src="https://freefy.app/search/"
           allow="autoplay; encrypted-media; fullscreen"
-          loading="lazy"
           className={`h-[420px] w-full border-0 ${mode === 'freefy' ? '' : 'hidden'}`}
           />
          {mode !== 'freefy' && (
