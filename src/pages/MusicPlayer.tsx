@@ -27,6 +27,8 @@ const fmt = (s: number) => {
   return m + ':' + (sec < 10 ? '0' : '') + sec;
 };
 
+const tabLabels = {local: 'Local', freefy:'Web2.0', web: 'Web'};
+
 interface MusicPlayerProps {
   zIndex: number;
   onFocus: () => void;
@@ -90,7 +92,7 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
     setTime(value);
   };
 
-  const [mode, setMode] = useState<'local' | 'web'>('local');
+  const [mode, setMode] = useState<'local'| 'freefy'|'web'>('local');
   const [webTracks, setWebTracks] = useState<Track[]>([]);
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
@@ -134,7 +136,7 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
 
   };
 
-    const switchMode= (m: 'local' | 'web') => {
+    const switchMode= (m: 'local' | 'freefy' | 'web') => {
       setMode(m);
       setIndex(0);
       setPlaying(false);
@@ -171,20 +173,30 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
         </button>
       </div>
 
-      <iframe src="https://freefy.app/search/" allow="autoplay; encrypted-media; fullscreen" className="h-[420px] w-full border-0" />
 
-      <div className="flex border-b border-[#1b1b1b] text=-sm">
-        {(['local', 'web'] as const).map((m) => (
+      <div className="flex border-b border-[#1b1b1b] text-sm">
+        {(['local','freefy', 'web'] as const).map((m) => (
           <button
           key={m}
           onClick={() => switchMode(m)}
           className={`flex-1 cursor-pointer py-2 ${mode === m ? 'bg-[#2b3f5c] text-[#78aeed]' : 'hover:bg-[#2f2f2f]'}`}
           >
-            {m=== 'local' ? 'Local' : 'Web'}
+            {tabLabels[m]}
           </button>
         ))}
       </div>
          
+         {mode === 'freefy' ? (
+          <iframe
+          src="https://freefy.app/search/"
+          allow="autoplay; encrypted-media; fullscreen"
+          className="h-[420px] w-full border-0"
+          />
+         ) : (
+          <>
+         
+
+
          {mode === 'web' && (
           <div className= " flex gap-2 p-3">
             <input
@@ -263,6 +275,8 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
           </button>
         ))}
       </div>
+      </>
+  )}
     </div>
   );
 }
