@@ -145,6 +145,7 @@ export default function Home() {
           zIndex={10 + openWindows.indexOf('Calendar')}
           onFocus={() => bringToFront('Calendar')}
           onClose={() => closeWindow('Calendar')}
+          onMinimize={() => minimizeWindow('Calendar')}
         />
         </div>
       )}
@@ -167,6 +168,9 @@ export default function Home() {
          items={dockItems}
          iconSize={iconSize}
          onItemClick={handleItemClick}
+         showLabels={settings.showLabels}
+         openIds={openWindows}
+         minimizedIds={minimized}
          />
       )}
       

@@ -11,11 +11,14 @@ interface DialDockProps {
     items: DialItem[];
     iconSize: number;
     onItemClick:(id: string) => void;
+    showLabels: boolean;
+    minimizedIds: string[];
+    openIds: string[];
 
 }
 const STEP = (35 * Math.PI) / 180;
 
-export default function DialDock({ items, iconSize, onItemClick}: DialDockProps) {
+export default function DialDock({ items, iconSize, onItemClick, showLabels, openIds, minimizedIds}: DialDockProps) {
 
     const [active, setActive] = useState(0);
     const [hovered, setHovered] = useState(false);
@@ -57,26 +60,45 @@ export default function DialDock({ items, iconSize, onItemClick}: DialDockProps)
             const x = -radius * Math.cos(angle);
             const y = -radius * Math.sin(angle);
 
+            const isOpen = openIds.includes(item.id);
+            const isMin = minimizedIds.includes(item.id);
+
             return (
-                <img
+                <div
                 key={item.id}
-                src={item.icon}
-                alt={item.label}
-                draggable={false}
                 onClick={() => (offset === 0 ? onItemClick(item.id) : setActive(i))}
-                className={`absolute max-w-none left-0 top-0 cursor-pointer object-contain ${
-                visible ? 'opacity-100' : 'pointer-events-none opacity-0'
+                className={`absolute left-0 top-0 cursor-pointer ${
+                    visible ? 'opacity-100' : 'pointer-events-none opacity-0'
                 }`}
                 style={{
                     width: iconSize,
                     height: iconSize,
-                    transform: `translate(${x- iconSize /2}px, ${y - iconSize /2}px)`,
-                    transition: 'transform 360ms cubic-bezier(0.34, 1.56 , 0.64, 1), opacity 150ms ease-out',
+                    transform: `translate(${x - iconSize / 2}px, ${y - iconSize / 2}px)`,
+                    transition:'transform 260ms cubic-bezier(0.34, 1.56, 0.64 ,1), opacity 150ms ease-out',
                 }}
-                />
+                >
+                    {showLabels && visible && (
+                        <span className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 whitespace-nowrap rounded-md bg-[rgba(20,20,25,0.85)] px-[10px] py-1 text-xs text-white">
+                            {item.label}
+                        </span>
+
+                    )}
+
+                    <img
+                    src={item.icon}
+                    alt={item.label}
+                    draggable={false}
+                    className="block max-w-none object-contain"
+                    style={{ width: iconSize, height: iconSize}}
+                    />
+
+                    {isOpen && (
+                        <span className={`absolute bottom-[-9px] left-1/2 h-[5px] w-[5px] -translate-x-1/2 rounded-full ${isMin ? 'bg-white/40' : 'bg-white'}`}
+                        />
+                    )}
+                </div>
             );
         })}
-
         </div>
     );
 }
