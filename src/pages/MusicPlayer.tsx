@@ -41,7 +41,14 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
   const [playing, setPlaying] = useState(false);
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.8);
+  const [volume, setVolume] = useState(() => {
+    try {
+      const v = localStorage.getItem('webos-music-volume');
+      return v === null ? 0.8 : Number(v);
+    } catch {
+      return 0.8;
+    }
+  });
   const [pos, setPos] = useState({
     x: Math.max(12, window.innerWidth / 2 - 70),
     y: Math.max(12, window.innerHeight / 2 - 250),
@@ -54,6 +61,11 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
 
   useEffect(() => {
     if (audioRef.current) audioRef.current.volume = volume;
+    try {
+      localStorage.setItem('webos-music-volume', String(volume));
+    } catch {
+      return;
+    }
   }, [volume]);
 
   const startDrag = (e: ReactMouseEvent) => {
@@ -92,7 +104,22 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
     setTime(value);
   };
 
-  const [mode, setMode] = useState<'local'| 'freefy'|'web'>('local');
+  const [mode, setMode] = useState<'local'| 'freefy'|'web'>(() => {
+    try {
+      const m = localStorage.getItem('webos-music-mode');
+      return m === 'freefy' || m === 'web' ? m: 'local';
+    } catch {
+      return 'local';
+    }
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem('webos-music-mode', mode);
+    } catch {
+      return;
+    }
+  }, [mode]);
+
   const [webTracks, setWebTracks] = useState<Track[]>([]);
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
@@ -146,7 +173,7 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
   return (
     <div
       onMouseDown={onFocus}
-      className="absolute w-[380px] overflow-hidden rounded-xl border border-[#1b1b1b] bg-[#242424] text-white shadow-xl"
+      className="absolute w-[380px] overflow-hidden rounded-xl border border-[#1b1b1b] [color-scheme:dark] bg-[#242424] text-white shadow-xl"
       style={{ left: pos.x, top: pos.y, zIndex }}
     >
       <audio
@@ -186,13 +213,14 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
         ))}
       </div>
          
-         {mode === 'freefy' ? (
+      
           <iframe
           src="https://freefy.app/search/"
           allow="autoplay; encrypted-media; fullscreen"
-          className="h-[420px] w-full border-0"
+          loading="lazy"
+          className={`h-[420px] w-full border-0 ${mode === 'freefy' ? '' : 'hidden'}`}
           />
-         ) : (
+         {mode !== 'freefy' && (
           <>
          
 

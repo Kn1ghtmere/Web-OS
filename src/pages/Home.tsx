@@ -32,6 +32,12 @@ export default function Home() {
   const [openWindows, setOpenWindows] = useState<WindowId[]>([]);
   const [scales, setScales] = useState<number[]>(dockItems.map(() => 1));
   const [hovered, setHovered] = useState<number | null>(null);
+  const [musicMounted, setMusicMounted] = useState(false);
+
+
+  useEffect(()=> {
+    if (openWindows.includes('music')) setMusicMounted(true);
+  }, [openWindows]);
 
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -127,12 +133,14 @@ export default function Home() {
         />
       )}
 
-      {openWindows.includes('music') && (
-        <MusicPlayer
+      {musicMounted && (
+        <div style={{ display: openWindows.includes('music') ? 'block' : 'none' }}>
+          <MusicPlayer
           zIndex={10 + openWindows.indexOf('music')}
-          onFocus={() => bringToFront('music')}
-          onClose={() => closeWindow('music')}
-        />
+          onFocus={()=> bringToFront('music')}
+          onClose={()=> closeWindow('music')}
+          />
+          </div>
       )}
 
       
