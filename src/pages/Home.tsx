@@ -171,6 +171,9 @@ export default function Home() {
          showLabels={settings.showLabels}
          openIds={openWindows}
          minimizedIds={minimized}
+         opacity={settings.dockOpacity}
+         magnification={settings.magnification}
+         magnificationAmount={settings.magnificationAmount}
          />
       )}
       

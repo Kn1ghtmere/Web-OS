@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useRef } from "react";
 
@@ -14,15 +15,19 @@ interface DialDockProps {
     showLabels: boolean;
     minimizedIds: string[];
     openIds: string[];
+    opacity: number;
+    magnification: boolean;
+    magnificationAmount: number;
 
 }
 const STEP = (35 * Math.PI) / 180;
 
-export default function DialDock({ items, iconSize, onItemClick, showLabels, openIds, minimizedIds}: DialDockProps) {
+export default function DialDock({ items, iconSize, onItemClick, showLabels, openIds, minimizedIds, opacity, magnification, magnificationAmount }: DialDockProps) {
 
     const [active, setActive] = useState(0);
     const [hovered, setHovered] = useState(false);
     const lastStep = useRef(0)
+    const [hoveredId, setHoveredId] = useState<string | null>(null);
 
 
     const n = items.length;
@@ -46,8 +51,8 @@ export default function DialDock({ items, iconSize, onItemClick, showLabels, ope
         >
             {}
          <div
-        className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30 bg-white/20 shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-[16px] transition-all duration-200"
-        style={{ width: radius * 2 + iconSize, height: radius * 2 + iconSize }}
+        className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30 shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-[16px] transition-all duration-200"
+        style={{ width: radius * 2 + iconSize, height: radius * 2 + iconSize , background:`rgba(255,255,255,${opacity / 100})`,}}
       />
 
         {items.map((item, i) => {
@@ -62,10 +67,13 @@ export default function DialDock({ items, iconSize, onItemClick, showLabels, ope
 
             const isOpen = openIds.includes(item.id);
             const isMin = minimizedIds.includes(item.id);
+            const scale = magnification && hoveredId === item.id ? 1 + magnificationAmount / 100 : 1;
 
             return (
                 <div
                 key={item.id}
+                onMouseEnter={() => setHoveredId(item.id)}
+                onMouseLeave={()=> setHoveredId(null)}
                 onClick={() => (offset === 0 ? onItemClick(item.id) : setActive(i))}
                 className={`absolute left-0 top-0 cursor-pointer ${
                     visible ? 'opacity-100' : 'pointer-events-none opacity-0'
@@ -77,8 +85,10 @@ export default function DialDock({ items, iconSize, onItemClick, showLabels, ope
                     transition:'transform 260ms cubic-bezier(0.34, 1.56, 0.64 ,1), opacity 150ms ease-out',
                 }}
                 >
-                    {showLabels && visible && (
-                        <span className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 whitespace-nowrap rounded-md bg-[rgba(20,20,25,0.85)] px-[10px] py-1 text-xs text-white">
+                    {showLabels && visible && hoveredId === item.id && (
+                        <span className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 whitespace-nowrap rounded-md bg-[rgba(20,20,25,0.85)] px-[10px] py-1 text-xs text-white"
+                        style={{ marginRight: 12 + (iconSize * (scale - 1)) / 2}}
+                        >
                             {item.label}
                         </span>
 
@@ -89,7 +99,7 @@ export default function DialDock({ items, iconSize, onItemClick, showLabels, ope
                     alt={item.label}
                     draggable={false}
                     className="block max-w-none object-contain"
-                    style={{ width: iconSize, height: iconSize}}
+                    style={{ width: iconSize, height: iconSize, transform:`scale(${scale})`, transition: 'transform 100ms ease-out',}}
                     />
 
                     {isOpen && (
