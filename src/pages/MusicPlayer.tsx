@@ -7,7 +7,13 @@ import myownchapter from '../assets/music/myownchapter.mp3';
 import threadLight from '../assets/music/threadLight.mp3';
 import wander from '../assets/music/wander.mp3';
 
-const songs = [
+interface Track {
+  title: string;
+  src: string;
+  artist?: string;
+}
+
+const localSongs: Track[] = [
   { title: 'Homefree', src: homefree },
   { title: 'My Own Chapter', src: myownchapter },
   { title: 'Thread Light', src: threadLight },
@@ -64,13 +70,13 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
     window.addEventListener('mouseup', up);
   };
 
-  const next = () => setIndex((index + 1) % songs.length);
+  const next = () => songs.length && setIndex((index + 1) % songs.length);
 
   const prev = () => {
     if (time > 3 && audioRef.current) {
       audioRef.current.currentTime = 0;
       return;
-    }
+    } if (songs.length)
     setIndex((index - 1 + songs.length) % songs.length);
   };
 
@@ -84,6 +90,57 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
     setTime(value);
   };
 
+  const [mode, setMode] = useState<'local' | 'web'>('local');
+  const [webTracks, setWebTracks] = useState<Track[]>([]);
+  const [query, setQuery] = useState('');
+  const [searching, setSearching] = useState(false);
+
+  const songs = mode === 'local' ? localSongs : webTracks;
+  const current = songs[index];
+
+
+  const  APP = 'webos';
+   
+  const search = async () => {
+
+    const q = query.trim();
+    if(!q) return;
+    setSearching(true);
+    try{
+      const res = await fetch(
+        `https://api.audius.co/v1/tracks/search?query=${encodeURIComponent(q)}&app_name=${APP}`
+      );
+
+      const json = await res.json();
+      const results : Track[] = json.data
+      .filter((t: { is_streamable?: boolean }) => t.is_streamable !== false)
+      .slice(0, 10)
+      .map((t: { id: string; title: string; user: {name: string} }) => ({
+        title: t.title,
+        artist: t.user.name,
+        src: `https://api.audius.co/v1/tracks/${t.id}/stream?app_name=${APP}`,
+      }));
+      setWebTracks(results);
+      setIndex(0);
+      setPlaying(false);
+    } catch {
+      setWebTracks([]);
+    } finally {
+      setSearching(false);
+    }
+   
+   
+  
+
+  };
+
+    const switchMode= (m: 'local' | 'web') => {
+      setMode(m);
+      setIndex(0);
+      setPlaying(false);
+    };
+
+
   return (
     <div
       onMouseDown={onFocus}
@@ -92,7 +149,7 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
     >
       <audio
         ref={audioRef}
-        src={songs[index].src}
+        src={current?.src}
         onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
         onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
         onPlay={() => setPlaying(true)}
@@ -114,8 +171,39 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
         </button>
       </div>
 
+      <div className="flex border-b border-[#1b1b1b] text=-sm">
+        {(['local', 'web'] as const).map((m) => (
+          <button
+          key={m}
+          onClick={() => switchMode(m)}
+          className={`flex-1 cursor-pointer py-2 ${mode === m ? 'bg-[#2b3f5c] text-[#78aeed]' : 'hover:bg-[#2f2f2f]'}`}
+          >
+            {m=== 'local' ? 'Local' : 'Web'}
+          </button>
+        ))}
+      </div>
+         
+         {mode === 'web' && (
+          <div className= " flex gap-2 p-3">
+            <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && search()}
+            placeholder="Search a song..."
+            className="min-w-0 flex-1 rounded-md border border-[#3d3d3d] bg-[#1e1e1e] px-2.5 py-1.5 text-sm outline-none placeholder:text-gray-600"
+            />
+          <button onClick={search} className="cursor-pointer rounded-md bg-[#3584e4] px-3 text-sm hover:bg-[#4a94ee]">
+            {searching ? '...' : 'Go'}
+          </button>
+        </div>
+         )}
+
+
       <div className="px-5 pt-5 pb-4">
-        <div className="mb-4 truncate text-lg">{songs[index].title}</div>
+        <div className="mb-4 truncate text-lg">
+          {current?.title ?? 'Search for a song'}
+          {current?.artist && <span className="text-sm text-gray-400"> · {current.artist}</span>}
+        </div>
 
         <div className="flex items-center gap-2 text-xs text-gray-400">
           <span className="w-8">{fmt(time)}</span>
@@ -160,7 +248,7 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
         </div>
       </div>
 
-      <div className="border-t border-[#1b1b1b]">
+      <div className="max-h-48 overflow-y-auto border-t border-[#1b1b1b][color-scheme:dark]">
         {songs.map((song, i) => (
           <button
             key={song.title}
