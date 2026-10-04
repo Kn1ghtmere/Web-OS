@@ -7,6 +7,7 @@ import Settings from './Settings';
 import Notes from './Notes';
 import Calendar from './Calender';
 import MusicPlayer from './MusicPlayer';
+import Clock from '../pages/Clock';
 
 
 
@@ -20,10 +21,10 @@ import {
 import type { SettingsState } from '../components/settings/SettingsConfig';
 
 
-type WindowId = 'settings' | 'calc' | 'music' | 'notes' | 'Calendar';
+type WindowId = 'settings' | 'calc' | 'music' | 'notes' | 'Calendar' | 'clock';
 
 const isWindowId = (id: string): id is WindowId =>
-  id === 'settings' || id === 'calc' || id === 'music' || id === 'notes' || id === 'Calendar';
+  id === 'settings' || id === 'calc' || id === 'music' || id === 'notes' || id === 'Calendar'|| id=== 'clock';
 
 
 
@@ -114,6 +115,16 @@ export default function Home() {
         backgroundRepeat: 'no-repeat',
       }}
     >
+  {openWindows.includes('clock') && (
+  <div style={winStyle('clock')}>
+    <Clock
+      onClose={() => closeWindow('clock')}
+      onMinimize={() => minimizeWindow('clock')}
+      zIndex={10 + openWindows.indexOf('clock')}
+      onFocus={() => bringToFront('clock')}
+    />
+  </div>
+)}
       {openWindows.includes('settings') && (
        <div style={winStyle('settings')}>
         <Settings
