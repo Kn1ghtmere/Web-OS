@@ -101,7 +101,6 @@ export default function Calendar({ zIndex, onFocus, onMinimize , onClose }: Cale
     setText('');
   };
 
-  const removeEvent = (id: number) => setEvents(events.filter((ev) => ev.id !== id));
 
   return (
     <div
@@ -201,7 +200,7 @@ export default function Calendar({ zIndex, onFocus, onMinimize , onClose }: Cale
               <div className="px-4 py-6 text-center text-sm text-gray-500">Nothing planned</div>
             )}
 
-            {dayEvents.map((ev) => (
+           
               <div
               className="flex items-center gap-1"
               >
@@ -221,7 +220,6 @@ export default function Calendar({ zIndex, onFocus, onMinimize , onClose }: Cale
                 </button>
 
               </div>
-            ))}
           </div>
 
           <div className="flex gap-2 border-t border-[#1b1b1b] p-3">
