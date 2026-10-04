@@ -171,6 +171,8 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
         </button>
       </div>
 
+      <iframe src="https://freefy.app/search/" allow="autoplay; encrypted-media; fullscreen" className="h-[420px] w-full border-0" />
+
       <div className="flex border-b border-[#1b1b1b] text=-sm">
         {(['local', 'web'] as const).map((m) => (
           <button
