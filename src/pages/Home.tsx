@@ -8,7 +8,7 @@ import musicIcon from '../assets/icons/gnome-music.svg';
 import notesIcon from '../assets/icons/gnome-todo.svg';
 import settingsIcon from '../assets/icons/settings-icon.svg';
 import terminalIcon from '../assets/icons/terminal.svg';
-
+import FileManager from './Filemanager';
 import Settings from './Settings';
 import MusicPlayer from './MusicPlayer';
 import Notes from './Notes';
@@ -28,10 +28,11 @@ interface DockItem {
   icon: string;
 }
 
-type WindowId = 'settings' | 'music' | 'notes';
+type WindowId = 'settings' | 'music' | 'notes'|'file-manager'
 
 const isWindowId = (id: string): id is WindowId =>
-  id === 'settings' || id === 'music' || id === 'notes' || id==='calendar'
+  id === 'settings' || id === 'music' || id === 'notes' || id==='calendar'||
+  id=='file-manager';
 
 const dockItems: DockItem[] = [
   { id: 'file-manager', label: 'Files', icon: fileManagerIcon },
@@ -149,9 +150,16 @@ export default function Home() {
             onFocus={()=>bringToFront('calendar')}
             onClose={()=>closeWindow('calendar')}
         />
-      )
+      )}
+    {openWindows.includes('file-manager') && (
+  <FileManager
+    zIndex={10 + openWindows.indexOf('file-manager')}
+    onFocus={() => bringToFront('file-manager')}
+    onClose={() => closeWindow('file-manager')}
+  />
+)}
 
-      }
+      
 
       <div className="pointer-events-none absolute bottom-3 left-0 right-0 z-[1000] flex justify-center">
         <div
