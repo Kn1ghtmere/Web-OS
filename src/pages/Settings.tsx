@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { CSSProperties, MouseEvent as ReactMouseEvent, ReactNode } from 'react';
 import BackgroundSwitcher from '../components/settings/BacgroundSwitcher';
 import type { SettingsState } from '../components/settings/SettingsConfig';
+import { Minus } from 'lucide-react';
 
 type Tab = 'wallpaper' | 'dock' | 'general';
 
@@ -86,9 +87,10 @@ interface SettingsProps {
   onClose: () => void;
   zIndex?: number;
   onFocus?: () => void;
+  onMinimize: () => void;
 }
 
-export default function Settings({ settings, onChange, onReset, onClose, zIndex , onFocus }: SettingsProps) {
+export default function Settings({ settings, onChange, onReset, onClose, zIndex ,onMinimize, onFocus }: SettingsProps) {
   const [tab, setTab] = useState<Tab>('wallpaper');
   const [pos, setPos] = useState(() => ({
     x: Math.max(12, (window.innerWidth - WIDTH) / 2),
@@ -130,13 +132,24 @@ export default function Settings({ settings, onChange, onReset, onClose, zIndex 
         className="flex h-10 shrink-0 select-none items-center justify-between bg-[rgba(17,20,27,0.95)] py-0 pl-4 pr-2"
       >
         <span className="text-sm">Settings</span>
+
+        <div className="flex items=-center gap-1">
         <button
           onMouseDown={(e) => e.stopPropagation()}
-          onClick={onClose}
-          className="h-7 w-7 cursor-pointer rounded-md border-none bg-transparent text-base text-white"
+          onClick={onMinimize}
+          className="h-7 w-7 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-white"
         >
-          ×
+          <Minus size={16}/>
         </button>
+
+        <button
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={onClose}
+        className="h-7 w-7 cursor-pointer rounded-md border-none bg-transparent text-base text-white"
+        >
+          x
+        </button>
+        </div>
       </div>
 
       <div className="flex min-h-0 flex-1 bg-[rgba(24,26,32,0.96)]">

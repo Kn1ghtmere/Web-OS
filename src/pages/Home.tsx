@@ -32,12 +32,10 @@ export default function Home() {
   const [openWindows, setOpenWindows] = useState<WindowId[]>([]);
   const [scales, setScales] = useState<number[]>(dockItems.map(() => 1));
   const [hovered, setHovered] = useState<number | null>(null);
-  const [musicMounted, setMusicMounted] = useState(false);
+  const [minimized, setMinimized] = useState<WindowId[]>([]);
 
 
-  useEffect(()=> {
-    if (openWindows.includes('music')) setMusicMounted(true);
-  }, [openWindows]);
+
 
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -48,21 +46,29 @@ export default function Home() {
   const updateSettings = (patch: Partial<SettingsState>) =>
     setSettings((prev) => ({ ...prev, ...patch }));
 
-  const bringToFront = (id: WindowId) =>
-    setOpenWindows((prev) =>
-      prev[prev.length - 1] === id ? prev : [...prev.filter((w) => w !== id), id]
-    );
+  const bringToFront = (id: WindowId) => {
+  setMinimized((prev) => (prev.includes(id) ? prev.filter((w) => w !== id) : prev));
+  setOpenWindows((prev) =>
+    prev[prev.length - 1] === id ? prev : [...prev.filter((w) => w !== id), id]
+  );
+  };
 
-  const closeWindow = (id: WindowId) =>
+  const minimizeWindow = (id: WindowId) => 
+    setMinimized((prev) => (prev.includes(id) ? prev : [...prev, id]));
+
+  const closeWindow = (id: WindowId) => {
     setOpenWindows((prev) => prev.filter((w) => w !== id));
+    setMinimized((prev) => prev.filter((w) => w !== id));
+  };
+
 
   const topWindow = openWindows[openWindows.length - 1];
 
   const handleItemClick = (id: string) => {
     if (!isWindowId(id)) return;
 
-    if (!openWindows.includes(id) || topWindow !== id) bringToFront(id);
-    else closeWindow(id);
+    if (!openWindows.includes(id) || minimized.includes(id) || topWindow !== id) bringToFront(id);
+    else minimizeWindow(id);
   };
 
   const wallpaper =
@@ -72,6 +78,8 @@ export default function Home() {
   const gap = Math.round(iconSize * 0.32);
   const maxDist = iconSize * 2.7;
   const amount = settings.magnificationAmount / 100;
+
+  const winStyle = (id: WindowId) => ({ display: minimized.includes(id) ? 'none' : 'block' } );
 
   const handleMouseMove = (e: ReactMouseEvent<HTMLDivElement>) => {
     if (!settings.magnification) return;
@@ -107,37 +115,46 @@ export default function Home() {
       }}
     >
       {openWindows.includes('settings') && (
+       <div style={winStyle('settings')}>
         <Settings
-          settings={settings}
-          onChange={updateSettings}
-          onReset={() => setSettings(defaultSettings)}
-          onClose={() => closeWindow('settings')}
-          zIndex={10 + openWindows.indexOf('settings')}
-          onFocus={() => bringToFront('settings')}
-        />
-      )}
+       settings={settings}
+       onChange={updateSettings}
+       onReset={() => setSettings(defaultSettings)}
+       onClose={() => closeWindow('settings')}
+       onMinimize={() => minimizeWindow('settings')}
+       zIndex={10 + openWindows.indexOf('settings')}
+       onFocus={() => bringToFront('settings')}
+    />
+        </div>
+)}
 
       {openWindows.includes('notes') && (
+        <div style={winStyle('notes')}>
         <Notes
           zIndex={10 + openWindows.indexOf('notes')}
           onFocus={() => bringToFront('notes')}
+          onMinimize={() => minimizeWindow('notes')}
           onClose={() => closeWindow('notes')}
         />
+        </div>
       )}
 
       {openWindows.includes('Calendar') && (
+        <div style={winStyle('Calendar')}>
         <Calendar
           zIndex={10 + openWindows.indexOf('Calendar')}
           onFocus={() => bringToFront('Calendar')}
           onClose={() => closeWindow('Calendar')}
         />
+        </div>
       )}
 
-      {musicMounted && (
-        <div style={{ display: openWindows.includes('music') ? 'block' : 'none' }}>
+      {openWindows.includes('music') && (
+        <div style={winStyle('music')}>
           <MusicPlayer
           zIndex={10 + openWindows.indexOf('music')}
           onFocus={()=> bringToFront('music')}
+          onMinimize={() => minimizeWindow('music')}
           onClose={()=> closeWindow('music')}
           />
           </div>
@@ -170,6 +187,7 @@ export default function Home() {
             const scale = settings.magnification ? scales[i] : 1;
             const clickable = isWindowId(item.id);
             const open = isWindowId(item.id) && openWindows.includes(item.id);
+            const isMin = isWindowId(item.id) && minimized.includes(item.id);
 
             return (
               <div
@@ -212,7 +230,8 @@ export default function Home() {
                 />
 
                 {open && (
-                  <span className="absolute bottom-[-9px] left-1/2 h-[5px] w-[5px] -translate-x-1/2 rounded-full bg-white" />
+                  <span className={`absolute bottom-[-9px] left-1/2 h-[5px] w-[5px] -translate-x-1/2 rounded-full ${ isMin ? 'bg-white/40' : 'bg-white'}`}
+                   />
                 )}
               </div>
             );

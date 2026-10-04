@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, X } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, X , Minus} from 'lucide-react';
 
 import homefree from '../assets/music/homefree.mp3';
 import myownchapter from '../assets/music/myownchapter.mp3';
@@ -33,9 +33,10 @@ interface MusicPlayerProps {
   zIndex: number;
   onFocus: () => void;
   onClose: () => void;
+  onMinimize: () => void;
 }
 
-export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerProps) {
+export default function MusicPlayer({ zIndex, onFocus, onMinimize, onClose }: MusicPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -191,13 +192,26 @@ export default function MusicPlayer({ zIndex, onFocus, onClose }: MusicPlayerPro
         className="flex h-10 select-none items-center justify-between bg-[#303030] pl-4 pr-2 text-sm"
       >
         <span>Music</span>
+
+
+        <div 
+        className="flex items-center gap-1">
+          <button
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={onMinimize}
+          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-white"
+          >
+            <Minus size={16} />
+          </button>
         <button
+
           onMouseDown={(e) => e.stopPropagation()}
           onClick={onClose}
           className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full hover:bg-[#c01c28]"
         >
           <X size={16} />
         </button>
+        </div>
       </div>
 
 

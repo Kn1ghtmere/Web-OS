@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
-import { Plus, Trash2, X } from 'lucide-react';
+import { Plus, Trash2, X, Minus } from 'lucide-react';
 
 interface Note {
   id: number;
@@ -38,9 +38,10 @@ interface NotesProps {
   zIndex: number;
   onFocus: () => void;
   onClose: () => void;
+  onMinimize: () => void;
 }
 
-export default function Notes({ zIndex, onFocus, onClose }: NotesProps) {
+export default function Notes({ zIndex, onFocus, onMinimize, onClose }: NotesProps) {
   const [notes, setNotes] = useState<Note[]>(loadNotes);
   const [activeId, setActiveId] = useState<number | null>(() => loadNotes()[0]?.id ?? null);
   const [pos, setPos] = useState({
@@ -118,6 +119,15 @@ export default function Notes({ zIndex, onFocus, onClose }: NotesProps) {
         className="flex h-10 shrink-0 select-none items-center justify-between bg-[#303030] pl-4 pr-2 text-sm"
       >
    <span>Notes</span>
+
+       <div className="flex items-center gap-1">
+        <button
+         onMouseDown={(e) => e.stopPropagation()}
+         onClick={onMinimize}
+         className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-white"  
+         >
+          <Minus size={16}/>
+         </button>
         <button
           onMouseDown={(e) => e.stopPropagation()}
           onClick={onClose}
@@ -125,6 +135,7 @@ export default function Notes({ zIndex, onFocus, onClose }: NotesProps) {
         >
           <X size={16} />
         </button>
+        </div>
       </div>
 
       <div className="flex min-h-0 flex-1">
