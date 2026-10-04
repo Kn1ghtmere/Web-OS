@@ -1,26 +1,27 @@
-import { useState, useEffect, useRef } from 'react';
-import type { MouseEvent as ReactMouseEvent } from 'react';
+import { useState, useEffect, useRef } from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
 
-import calcIcon from '../assets/icons/calc.svg';
-import calendarIcon from '../assets/icons/calendar.svg';
-import fileManagerIcon from '../assets/icons/file-manager.svg';
-import musicIcon from '../assets/icons/gnome-music.svg';
-import todoIcon from '../assets/icons/gnome-todo.svg';
-import settingsIcon from '../assets/icons/settings-icon.svg';
-import terminalIcon from '../assets/icons/terminal.svg';
-import clock from '../assets/icons/clock.svg'
-import Clock from '../pages/Clock';
+import calcIcon from "../assets/icons/calc.svg";
+import calendarIcon from "../assets/icons/calendar.svg";
+import fileManagerIcon from "../assets/icons/file-manager.svg";
+import musicIcon from "../assets/icons/gnome-music.svg";
+import todoIcon from "../assets/icons/gnome-todo.svg";
+import settingsIcon from "../assets/icons/settings-icon.svg";
+import terminalIcon from "../assets/icons/terminal.svg";
+import clock from "../assets/icons/clock.svg";
+import Clock from "../pages/Clock";
+import Terminal from "../pages/Terminal";
 
-import Settings from './Settings';
+import Settings from "./Settings";
 
 import {
   wallpapers,
   defaultSettings,
   loadSettings,
   saveSettings,
-} from '../components/settings/SettingsConfig';
+} from "../components/settings/SettingsConfig";
 
-import type { SettingsState } from '../components/settings/settingsConfig';
+import type { SettingsState } from "../components/settings/SettingsConfig";
 
 interface DockItem {
   id: string;
@@ -28,21 +29,24 @@ interface DockItem {
   icon: string;
 }
 
-type WindowId = 'settings' | 'calc' | 'music' | 'clock';
+type WindowId = "settings" | "calc" | "music" | "clock" | "terminal";
 
 const isWindowId = (id: string): id is WindowId =>
-  id === 'settings' || id === 'calc' || id === 'music' || id === 'clock';
+  id === "settings" ||
+  id === "terminal" ||
+  id === "calc" ||
+  id === "music" ||
+  id === "clock";
 
 const dockItems: DockItem[] = [
-  { id: 'file-manager', label: 'Files', icon: fileManagerIcon },
-  { id: 'terminal', label: 'Terminal', icon: terminalIcon },
-  { id: 'todo', label: 'To-Do', icon: todoIcon },
-   { id: 'clock', label: 'Clock', icon: clock},
-  { id: 'music', label: 'Music', icon: musicIcon },
-  { id: 'calc', label: 'Calculator', icon: calcIcon },
-  { id: 'calendar', label: 'Calendar', icon: calendarIcon },
-  { id: 'settings', label: 'Settings', icon: settingsIcon },
- 
+  { id: "file-manager", label: "Files", icon: fileManagerIcon },
+  { id: "terminal", label: "Terminal", icon: terminalIcon },
+  { id: "todo", label: "To-Do", icon: todoIcon },
+  { id: "clock", label: "Clock", icon: clock },
+  { id: "music", label: "Music", icon: musicIcon },
+  { id: "calc", label: "Calculator", icon: calcIcon },
+  { id: "calendar", label: "Calendar", icon: calendarIcon },
+  { id: "settings", label: "Settings", icon: settingsIcon },
 ];
 
 export default function Home() {
@@ -62,7 +66,9 @@ export default function Home() {
 
   const bringToFront = (id: WindowId) =>
     setOpenWindows((prev) =>
-      prev[prev.length - 1] === id ? prev : [...prev.filter((w) => w !== id), id]
+      prev[prev.length - 1] === id
+        ? prev
+        : [...prev.filter((w) => w !== id), id],
     );
 
   const closeWindow = (id: WindowId) =>
@@ -99,7 +105,7 @@ export default function Home() {
         return distance < maxDist
           ? 1 + amount * Math.pow(1 - distance / maxDist, 2)
           : 1;
-      })
+      }),
     );
   };
 
@@ -113,30 +119,37 @@ export default function Home() {
       className="fixed inset-0 overflow-hidden text-left font-sans text-white"
       style={{
         backgroundImage: `url(${wallpaper.src})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
-      {openWindows.includes('clock') && (
-  <Clock
-    onClose={() => closeWindow('clock')}
-    zIndex={10 + openWindows.indexOf('clock')}
-    onFocus={() => bringToFront('clock')}
-  />
-)}
-      {openWindows.includes('settings') && (
+      {openWindows.includes("clock") && (
+        <Clock
+          onClose={() => closeWindow("clock")}
+          zIndex={10 + openWindows.indexOf("clock")}
+          onFocus={() => bringToFront("clock")}
+        />
+      )}
+      {openWindows.includes("terminal") && (
+        <Terminal
+          onClose={() => closeWindow("terminal")}
+          zIndex={10 + openWindows.indexOf("terminal")}
+          onFocus={() => bringToFront("terminal")}
+          apps={["settings", "clock", "terminal"]}
+          onOpen={(id) => isWindowId(id) && bringToFront(id)}
+        />
+      )}
+      {openWindows.includes("settings") && (
         <Settings
           settings={settings}
           onChange={updateSettings}
           onReset={() => setSettings(defaultSettings)}
-          onClose={() => closeWindow('settings')}
-          zIndex={10 + openWindows.indexOf('settings')}
-          onFocus={() => bringToFront('settings')}
+          onClose={() => closeWindow("settings")}
+          zIndex={10 + openWindows.indexOf("settings")}
+          onFocus={() => bringToFront("settings")}
         />
       )}
-
-    
 
       <div className="pointer-events-none absolute bottom-3 left-0 right-0 z-[1000] flex justify-center">
         <div
@@ -146,7 +159,7 @@ export default function Home() {
           style={{
             gap,
             background: `rgba(255,255,255,${settings.dockOpacity / 100})`,
-            WebkitBackdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: "blur(16px)",
           }}
         >
           {dockItems.map((item, i) => {
@@ -163,7 +176,7 @@ export default function Home() {
                 onClick={() => handleItemClick(item.id)}
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}
-                className={`relative ${clickable ? 'cursor-pointer' : 'cursor-default'}`}
+                className={`relative ${clickable ? "cursor-pointer" : "cursor-default"}`}
                 style={{
                   width: iconSize,
                   height: iconSize,
@@ -174,7 +187,7 @@ export default function Home() {
                     className="pointer-events-none absolute left-1/2 whitespace-nowrap rounded-md bg-[rgba(20,20,25,0.85)] px-[10px] py-1 text-xs text-white"
                     style={{
                       bottom: iconSize * scale + 12,
-                      transform: 'translateX(-50%)',
+                      transform: "translateX(-50%)",
                     }}
                   >
                     {item.label}
@@ -190,7 +203,7 @@ export default function Home() {
                     width: iconSize,
                     height: iconSize,
                     transform: `scale(${scale})`,
-                    transformOrigin: 'bottom center',
+                    transformOrigin: "bottom center",
                   }}
                 />
 
