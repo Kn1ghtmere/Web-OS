@@ -6,6 +6,7 @@ import homefree from '../assets/music/homefree.mp3';
 import myownchapter from '../assets/music/myownchapter.mp3';
 import threadLight from '../assets/music/threadLight.mp3';
 import wander from '../assets/music/wander.mp3';
+import MusicWidget from '../components/widgets/MusicWidget'
 
 interface Track {
   title: string;
@@ -34,9 +35,10 @@ interface MusicPlayerProps {
   onFocus: () => void;
   onClose: () => void;
   onMinimize: () => void;
+  minimized: boolean;
 }
 
-export default function MusicPlayer({ zIndex, onFocus, onMinimize, onClose }: MusicPlayerProps) {
+export default function MusicPlayer({ zIndex, onFocus, minimized, onMinimize, onClose }: MusicPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -172,10 +174,11 @@ export default function MusicPlayer({ zIndex, onFocus, onMinimize, onClose }: Mu
 
 
   return (
+    <>
     <div
       onMouseDown={onFocus}
       className="absolute w-[380px] overflow-hidden rounded-xl border border-[#1b1b1b] [color-scheme:dark] bg-[#242424] text-white shadow-xl"
-      style={{ left: pos.x, top: pos.y, zIndex }}
+      style={{ left: pos.x, top: pos.y, zIndex, display: minimized ? 'none' : 'block' }}
     >
       <audio
         ref={audioRef}
@@ -320,5 +323,19 @@ export default function MusicPlayer({ zIndex, onFocus, onMinimize, onClose }: Mu
       </>
   )}
     </div>
+     
+     <MusicWidget
+     title={current?.title}
+     artist={current?.artist}
+     playing={playing}
+     time={time}
+     duration={duration}
+     onToggle={() => setPlaying(!playing)}
+     onPrev={prev}
+     onNext={next}
+     onOpen={onFocus}
+     />
+     </>
+
   );
 }
