@@ -152,14 +152,13 @@ export default function Home() {
       )}
 
       {openWindows.includes('music') && (
-        <div style={winStyle('music')}>
           <MusicPlayer
           zIndex={10 + openWindows.indexOf('music')}
+          minimized={minimized.includes('music')}
           onFocus={()=> bringToFront('music')}
           onMinimize={() => minimizeWindow('music')}
           onClose={()=> closeWindow('music')}
           />
-          </div>
       )}
 
       {openWindows.includes('todo') && (

@@ -12,7 +12,7 @@ interface MusicWidgetProps {
     onOpen: () => void;
 }
 
-export default function MusicWidget({ title, artist, playing, time, duration, onToggle, onPrev, onNext, onOpen}: MusicWidgetsProps) {
+export default function MusicWidget({ title, artist, playing, time, duration, onToggle, onPrev, onNext, onOpen}: MusicWidgetProps) {
     
     const pct = duration ? (time / duration) * 100 : 0;
 
