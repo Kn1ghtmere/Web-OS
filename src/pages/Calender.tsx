@@ -27,7 +27,6 @@ interface CalendarProps {
   zIndex: number;
   onFocus: () => void;
   onClose: () => void;
-  onMinimize: () => void;
 }
 
 export default function Calendar({ zIndex, onFocus, onMinimize , onClose }: CalendarProps) {
