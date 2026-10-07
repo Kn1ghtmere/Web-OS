@@ -156,7 +156,6 @@ export default function Home() {
           zIndex={10 + openWindows.indexOf('Calendar')}
           onFocus={() => bringToFront('Calendar')}
           onClose={() => closeWindow('Calendar')}
-          onMinimize={() => minimizeWindow('Calendar') }
         />
         </div>
       )}

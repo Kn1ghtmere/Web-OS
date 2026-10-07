@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
-import { ChevronLeft, ChevronRight, Plus, X , Minus} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
 
 interface CalEvent {
   id: number;
@@ -27,10 +27,9 @@ interface CalendarProps {
   zIndex: number;
   onFocus: () => void;
   onClose: () => void;
-  onMinimize: () => void;
 }
 
-export default function Calendar({ zIndex, onFocus, onMinimize , onClose }: CalendarProps) {
+export default function Calendar({ zIndex, onFocus, onClose }: CalendarProps) {
   const [view, setView] = useState(() => {
     const d = new Date();
     return new Date(d.getFullYear(), d.getMonth(), 1);
@@ -201,25 +200,7 @@ export default function Calendar({ zIndex, onFocus, onMinimize , onClose }: Cale
             )}
 
            
-              <div
-              className="flex items-center gap-1"
-              >
-                <button
-                 onMouseDown={(e) => e.stopPropagation()}
-                onClick={onMinimize}
-                className="flex h-7 w-7 cursor-pointer items-center rounded-full hover:bg-[#3d3d3d]"
-                >
-                  <Minus size={16} />
-                </button>
-                <button
-                onMouseDown={(e) => e.stopPropagation()}
-                onClick={onClose}
-                className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full hover:bg-[#c01c28]"
-                >
-                  <X size={16}/>
-                </button>
-
-              </div>
+             
           </div>
 
           <div className="flex gap-2 border-t border-[#1b1b1b] p-3">
