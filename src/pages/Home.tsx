@@ -8,6 +8,7 @@ import Notes from './Notes';
 import Calendar from './Calender';
 import MusicPlayer from './MusicPlayer';
 import Clock from '../pages/Clock';
+import Todo from './Todo';
 
 
 
@@ -21,10 +22,10 @@ import {
 import type { SettingsState } from '../components/settings/SettingsConfig';
 
 
-type WindowId = 'settings' | 'calc' | 'music' | 'notes' | 'Calendar' | 'clock';
+type WindowId = 'settings' | 'calc' | 'music' | 'notes' | 'Calendar' | 'clock'|'todo';
 
 const isWindowId = (id: string): id is WindowId =>
-  id === 'settings' || id === 'calc' || id === 'music' || id === 'notes' || id === 'Calendar'|| id=== 'clock';
+  id === 'settings' || id === 'calc' || id === 'music' || id === 'notes' || id === 'Calendar'|| id=== 'clock'|| id === 'todo';
 
 
 
@@ -161,12 +162,22 @@ export default function Home() {
       )}
 
       {openWindows.includes('music') && (
-        <div style={winStyle('music')}>
           <MusicPlayer
           zIndex={10 + openWindows.indexOf('music')}
+          minimized={minimized.includes('music')}
           onFocus={()=> bringToFront('music')}
           onMinimize={() => minimizeWindow('music')}
           onClose={()=> closeWindow('music')}
+          />
+      )}
+
+      {openWindows.includes('todo') && (
+        <div style={winStyle('todo')}>
+          <Todo
+          zIndex={10 + openWindows.indexOf('todo')}
+          onFocus={() => bringToFront('todo')}
+          onMinimize={() => minimizeWindow('todo')}
+          onClose={() => closeWindow('todo')}
           />
           </div>
       )}
@@ -178,6 +189,12 @@ export default function Home() {
          items={dockItems}
          iconSize={iconSize}
          onItemClick={handleItemClick}
+         showLabels={settings.showLabels}
+         openIds={openWindows}
+         minimizedIds={minimized}
+         opacity={settings.dockOpacity}
+         magnification={settings.magnification}
+         magnificationAmount={settings.magnificationAmount}
          />
       )}
       
