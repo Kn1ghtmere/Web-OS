@@ -5,7 +5,7 @@ import musicIcon from '../../assets/icons/gnome-music.svg';
 import todoIcon from '../../assets/icons/gnome-todo.svg';
 import settingsIcon from '../../assets/icons/settings-icon.svg';
 import terminalIcon from '../../assets/icons/terminal.svg';
-import clock from "../assets/icons/clock.svg";
+import clock from "../../assets/icons/clock.svg";
 
 
 export interface DockItem {

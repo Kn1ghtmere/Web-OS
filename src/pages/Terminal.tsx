@@ -5,13 +5,12 @@ interface TermProps {
   onClose: () => void;
   zIndex: number;
   onFocus: () => void;
-  onOpen?: (app: string) => void; // wire to your window manager
+  onOpen?: (app: string) => void; 
   apps?: string[];
 }
 
 const W = 640, H = 420;
 
-// folders = objects, files = strings
 const fs: Node = {
   home: { 'readme.txt': 'Welcome to webOS.', notes: { 'todo.txt': 'ship the terminal' } },
   etc: { version: 'webOS 0.1' },
@@ -43,7 +42,7 @@ export default function Terminal({ onClose, zIndex, onFocus, onOpen, apps = ['cl
   const inp = useRef<HTMLInputElement>(null);
   const prompt = `/${cwd.join('/')} $`;
 
-  useEffect(() => end.current?.scrollIntoView(), [lines]);
+  useEffect(() => { end.current?.scrollIntoView();}, [lines]);
 
   const run = (line: string) => {
     const [cmd, ...rest] = line.split(/\s+/);
