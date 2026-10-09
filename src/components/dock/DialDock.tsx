@@ -74,7 +74,7 @@ export default function DialDock({ items, iconSize, onItemClick, showLabels, ope
                 key={item.id}
                 onMouseEnter={() => setHoveredId(item.id)}
                 onMouseLeave={()=> setHoveredId(null)}
-                onClick={() => (offset === 0 ? onItemClick(item.id) : setActive(i))}
+                onClick={() => { setActive(i); onItemClick(item.id);}}
                 className={`absolute left-0 top-0 cursor-pointer ${
                     visible ? 'opacity-100' : 'pointer-events-none opacity-0'
                 }`}
