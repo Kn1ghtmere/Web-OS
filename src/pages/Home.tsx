@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import type { MouseEvent as ReactMouseEvent } from 'react';
+import { useState, useEffect, useRef } from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
 
 import {dockItems} from "../components/dock/dockItems";
 import DialDock from '../components/dock/DialDock';
@@ -10,7 +10,8 @@ import Calendar from './Calender';
 import MusicPlayer from './MusicPlayer';
 import Clock from '../pages/Clock';
 import Todo from './Todo';
-
+import Terminal from "../pages/Terminal";
+import Waybar from "../pages/Waybar";
 
 
 import {
@@ -18,15 +19,15 @@ import {
   defaultSettings,
   loadSettings,
   saveSettings,
-} from '../components/settings/SettingsConfig';
+} from "../components/settings/SettingsConfig";
 
 import type { SettingsState } from '../components/settings/SettingsConfig';
 
 
-type WindowId = 'settings' | 'calc' | 'music' | 'notes' | 'Calendar' | 'clock'|'todo'|'file-manager';
+type WindowId = 'settings' | 'calc' | 'music' | 'notes' | 'Calendar' | 'clock'|'todo'|'file-manager'| "terminal";
 
 const isWindowId = (id: string): id is WindowId =>
-  id === 'settings' || id === 'calc' || id === 'music' || id === 'notes' || id === 'Calendar'|| id=== 'clock'|| id === 'todo'|| id=='file-manager';
+  id === 'settings' || id === 'calc' || id === 'music' || id === 'notes' || id === 'Calendar'|| id=== 'clock'|| id === 'todo'|| id=='file-manager'|| id === "terminal";
 
 
 
@@ -98,7 +99,7 @@ export default function Home() {
         return distance < maxDist
           ? 1 + amount * Math.pow(1 - distance / maxDist, 2)
           : 1;
-      })
+      }),
     );
   };
 
@@ -108,16 +109,31 @@ export default function Home() {
   };
 
   return (
+    
     <div
       className="fixed inset-0 overflow-hidden text-left font-sans text-white"
       style={{
         backgroundImage: `url(${wallpaper.src})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
-  {openWindows.includes('clock') && (
+  <Waybar
+      openWindows={openWindows}
+      active={topWindow}
+      onSelect={(id) => isWindowId(id) && bringToFront(id)}
+    /> 
+    {openWindows.includes("terminal") && (
+        <Terminal
+          onClose={() => closeWindow("terminal")}
+          zIndex={10 + openWindows.indexOf("terminal")}
+          onFocus={() => bringToFront("terminal")}
+          apps={["settings", "clock", "terminal"]}
+          onOpen={(id) => isWindowId(id) && bringToFront(id)}
+        />
+      )}
+    {openWindows.includes('clock') && (
   <div style={winStyle('clock')}>
     <Clock
       onClose={() => closeWindow('clock')}
@@ -219,7 +235,7 @@ export default function Home() {
           style={{
             gap,
             background: `rgba(255,255,255,${settings.dockOpacity / 100})`,
-            WebkitBackdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: "blur(16px)",
           }}
         >
           {dockItems.map((item, i) => {
@@ -237,7 +253,7 @@ export default function Home() {
                 onClick={() => handleItemClick(item.id)}
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}
-                className={`relative ${clickable ? 'cursor-pointer' : 'cursor-default'}`}
+                className={`relative ${clickable ? "cursor-pointer" : "cursor-default"}`}
                 style={{
                   width: iconSize,
                   height: iconSize,
@@ -248,7 +264,7 @@ export default function Home() {
                     className="pointer-events-none absolute left-1/2 whitespace-nowrap rounded-md bg-[rgba(20,20,25,0.85)] px-[10px] py-1 text-xs text-white"
                     style={{
                       bottom: iconSize * scale + 12,
-                      transform: 'translateX(-50%)',
+                      transform: "translateX(-50%)",
                     }}
                   >
                     {item.label}
@@ -264,7 +280,7 @@ export default function Home() {
                     width: iconSize,
                     height: iconSize,
                     transform: `scale(${scale})`,
-                    transformOrigin: 'bottom center',
+                    transformOrigin: "bottom center",
                   }}
                 />
 

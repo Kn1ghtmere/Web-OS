@@ -129,7 +129,7 @@ export default function Settings({ settings, onChange, onReset, onClose, zIndex 
     >
       <div
         onMouseDown={startDrag}
-        className="flex h-10 shrink-0 select-none items-center justify-between bg-[rgba(17,20,27,0.95)] py-0 pl-4 pr-2"
+        className="flex h-10 shrink-0 select-none items-center justify-between bg-[#11141bf2] py-0 pl-4 pr-2"
       >
         <span className="text-sm">Settings</span>
 
