@@ -5,7 +5,6 @@ import { ArrowUp,ChevronLeft,ChevronRight,FilePlus,FileText,
   House,Pencil,Trash2,
   X,
 } from 'lucide-react';
-import { AiFillSafetyCertificate } from 'react-icons/ai';
 
 interface Item {
   id: string;
