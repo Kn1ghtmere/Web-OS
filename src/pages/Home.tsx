@@ -129,7 +129,7 @@ export default function Home() {
           onClose={() => closeWindow("terminal")}
           zIndex={10 + openWindows.indexOf("terminal")}
           onFocus={() => bringToFront("terminal")}
-          apps={["settings", "clock", "terminal"]}
+          apps={["settings", "clock", "terminal", "todo", "Calendar", "notes", "file-manager","music"]}
           onOpen={(id) => isWindowId(id) && bringToFront(id)}
         />
       )}
