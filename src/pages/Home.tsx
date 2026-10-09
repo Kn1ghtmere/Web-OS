@@ -3,6 +3,7 @@ import type { MouseEvent as ReactMouseEvent } from 'react';
 
 import {dockItems} from "../components/dock/dockItems";
 import DialDock from '../components/dock/DialDock';
+import FileManager from './Filemanager';
 import Settings from './Settings';
 import Notes from './Notes';
 import Calendar from './Calender';
@@ -22,10 +23,10 @@ import {
 import type { SettingsState } from '../components/settings/SettingsConfig';
 
 
-type WindowId = 'settings' | 'calc' | 'music' | 'notes' | 'Calendar' | 'clock'|'todo';
+type WindowId = 'settings' | 'calc' | 'music' | 'notes' | 'Calendar' | 'clock'|'todo'|'file-manager';
 
 const isWindowId = (id: string): id is WindowId =>
-  id === 'settings' || id === 'calc' || id === 'music' || id === 'notes' || id === 'Calendar'|| id=== 'clock'|| id === 'todo';
+  id === 'settings' || id === 'calc' || id === 'music' || id === 'notes' || id === 'Calendar'|| id=== 'clock'|| id === 'todo'|| id=='file-manager';
 
 
 
@@ -182,7 +183,13 @@ export default function Home() {
           </div>
       )}
 
-      
+        {openWindows.includes('file-manager') && (
+  <FileManager
+    zIndex={10 + openWindows.indexOf('file-manager')}
+    onFocus={() => bringToFront('file-manager')}
+    onClose={() => closeWindow('file-manager')}
+  />
+)}
       
       {settings.dockStyle ==='dial' && (
         <DialDock
@@ -199,6 +206,10 @@ export default function Home() {
       )}
       
     {settings.dockStyle === 'bottom' && (
+      
+  
+
+      
 
       <div className="pointer-events-none absolute bottom-3 left-0 right-0 z-[1000] flex justify-center">
         <div
