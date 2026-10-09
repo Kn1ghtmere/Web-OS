@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type MouseEvent as RME } from 'react';
+import { useState, useEffect, useRef, type MouseEvent as RME, type ReactNode } from 'react';
 import { Minus } from 'lucide-react';
 
 type Tab = 'world' | 'alarm' | 'stopwatch' | 'timer';
@@ -275,7 +275,7 @@ function TimerTab() {
   );
 }
 
-const tabs: [Tab, string, () => JSX.Element][] = [
+const tabs: [Tab, string, () => ReactNode][] = [
   ['world', 'World Clock', WorldClock],
   ['alarm', 'Alarm', AlarmTab],
   ['stopwatch', 'Stopwatch', Stopwatch],
