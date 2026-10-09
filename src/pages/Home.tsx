@@ -11,6 +11,7 @@ import terminalIcon from "../assets/icons/terminal.svg";
 import clock from "../assets/icons/clock.svg";
 import Clock from "../pages/Clock";
 import Terminal from "../pages/Terminal";
+import Waybar from "../pages/Waybar"
 
 import Settings from "./Settings";
 
@@ -28,6 +29,8 @@ interface DockItem {
   label: string;
   icon: string;
 }
+
+
 
 type WindowId = "settings" | "calc" | "music" | "clock" | "terminal";
 
@@ -115,6 +118,7 @@ export default function Home() {
   };
 
   return (
+    
     <div
       className="fixed inset-0 overflow-hidden text-left font-sans text-white"
       style={{
@@ -124,6 +128,11 @@ export default function Home() {
         backgroundRepeat: "no-repeat",
       }}
     >
+      <Waybar
+      openWindows={openWindows}
+      active={topWindow}
+      onSelect={bringToFront}
+    />
       {openWindows.includes("clock") && (
         <Clock
           onClose={() => closeWindow("clock")}
