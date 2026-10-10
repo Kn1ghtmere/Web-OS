@@ -11,8 +11,10 @@ import terminalIcon from "../assets/icons/terminal.svg";
 import clock from "../assets/icons/clock.svg";
 import Clock from "../pages/Clock";
 import Terminal from "../pages/Terminal";
-import Waybar from "../pages/Waybar"
-
+import Waybar from "../pages/Waybar";
+import About from "../pages/About";
+import Gallery from "../pages/Gallery";
+import galley from "../assets/icons/gallery.webp"
 
 import Settings from "./Settings";
 
@@ -31,22 +33,23 @@ interface DockItem {
   icon: string;
 }
 
-
-
-type WindowId = "settings" | "calc" | "music" | "clock" | "terminal";
+type WindowId = "settings" | "calc" | "music" | "about" | "clock" | "terminal" | "gallery" ;
 
 const isWindowId = (id: string): id is WindowId =>
   id === "settings" ||
   id === "terminal" ||
   id === "calc" ||
   id === "music" ||
-  id === "clock";
+  id === "clock" ||
+  id === "gallery"||
+  id === "about";
 
 const dockItems: DockItem[] = [
   { id: "file-manager", label: "Files", icon: fileManagerIcon },
   { id: "terminal", label: "Terminal", icon: terminalIcon },
   { id: "todo", label: "To-Do", icon: todoIcon },
   { id: "clock", label: "Clock", icon: clock },
+  { id: "gallery", label: "Gallery", icon : galley },
   { id: "music", label: "Music", icon: musicIcon },
   { id: "calc", label: "Calculator", icon: calcIcon },
   { id: "calendar", label: "Calendar", icon: calendarIcon },
@@ -119,7 +122,6 @@ export default function Home() {
   };
 
   return (
-    
     <div
       className="fixed inset-0 overflow-hidden text-left font-sans text-white"
       style={{
@@ -129,14 +131,28 @@ export default function Home() {
         backgroundRepeat: "no-repeat",
       }}
     >
-     <Waybar
+      <Waybar
         openWindows={openWindows}
         active={topWindow}
         onSelect={bringToFront}
         onOpenSettings={() => bringToFront("settings")}
         onOpenTerminal={() => bringToFront("terminal")}
-        onOpenAbout={() => bringToFront("settings")} // Or wire to an About window if you create one
+        onOpenAbout={() => bringToFront("about")} 
       />
+      {openWindows.includes("about") && (
+        <About
+          onClose={() => closeWindow("about")}
+          zIndex={10 + openWindows.indexOf("about")}
+          onFocus={() => bringToFront("about")}
+        />
+      )}
+      {openWindows.includes("gallery") && (
+        <Gallery
+          onClose={() => closeWindow("gallery")}
+          zIndex={10 + openWindows.indexOf("gallery")}
+          onFocus={() => bringToFront("gallery")}
+        />
+      )}
       {openWindows.includes("clock") && (
         <Clock
           onClose={() => closeWindow("clock")}

@@ -6,7 +6,7 @@ interface WaybarProps {
   onSelect: (id: string) => void;
   onOpenAbout?: () => void;
   onOpenSettings?: () => void;
-  onOpenTerminal?: () => void;
+  onOpenTerminal?: () => void; 
 }
 
 export default function Waybar({
