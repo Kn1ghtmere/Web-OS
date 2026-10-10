@@ -13,6 +13,7 @@ import Clock from "../pages/Clock";
 import Terminal from "../pages/Terminal";
 import Waybar from "../pages/Waybar"
 
+
 import Settings from "./Settings";
 
 import {
@@ -128,11 +129,14 @@ export default function Home() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <Waybar
-      openWindows={openWindows}
-      active={topWindow}
-      onSelect={bringToFront}
-    />
+     <Waybar
+        openWindows={openWindows}
+        active={topWindow}
+        onSelect={bringToFront}
+        onOpenSettings={() => bringToFront("settings")}
+        onOpenTerminal={() => bringToFront("terminal")}
+        onOpenAbout={() => bringToFront("settings")} // Or wire to an About window if you create one
+      />
       {openWindows.includes("clock") && (
         <Clock
           onClose={() => closeWindow("clock")}
