@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import type { MouseEvent as ReactMouseEvent } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, X , Minus} from 'lucide-react';
-
+import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react';
+import { Pin, Play, Pause, SkipBack, SkipForward, Volume2, X , Minus} from 'lucide-react';
 import homefree from '../assets/music/homefree.mp3';
 import myownchapter from '../assets/music/myownchapter.mp3';
 import threadLight from '../assets/music/threadLight.mp3';
@@ -12,6 +11,7 @@ interface Track {
   title: string;
   src: string;
   artist?: string;
+
 }
 
 const localSongs: Track[] = [
@@ -36,9 +36,12 @@ interface MusicPlayerProps {
   onClose: () => void;
   onMinimize: () => void;
   minimized: boolean;
+   widgetOn: boolean;
+  onToggleWidget: () => void;
+  renderWidget: (id: string, content: ReactNode) => ReactNode;
 }
 
-export default function MusicPlayer({ zIndex, onFocus, minimized, onMinimize, onClose }: MusicPlayerProps) {
+export default function MusicPlayer({ zIndex, onFocus, minimized, onMinimize, onClose, widgetOn , onToggleWidget, renderWidget}: MusicPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -199,6 +202,16 @@ export default function MusicPlayer({ zIndex, onFocus, minimized, onMinimize, on
 
         <div 
         className="flex items-center gap-1">
+          
+          <button 
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={onToggleWidget}
+          title={widgetOn? 'Remove widget' : 'Pin as widget'  }
+           className={`flex h-7 w-7 cursor-pointer items-center justify-center rounded-full hover:bg-[#3d3d3d] ${widgetOn ? 'text-[#78aeed]' : ''}`}          >
+            <Pin size={16} />
+          </button>
+           
+
           <button
           onMouseDown={(e) => e.stopPropagation()}
           onClick={onMinimize}
@@ -322,7 +335,8 @@ export default function MusicPlayer({ zIndex, onFocus, minimized, onMinimize, on
       </>
   )}
     </div>
-     
+     {renderWidget(
+      'music',
      <MusicWidget
      title={current?.title}
      artist={current?.artist}
@@ -334,7 +348,8 @@ export default function MusicPlayer({ zIndex, onFocus, minimized, onMinimize, on
      onNext={next}
      onOpen={onFocus}
      />
+     )}
      </>
-
+     
   );
 }

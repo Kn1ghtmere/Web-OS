@@ -18,7 +18,7 @@ export default function MusicWidget({ title, artist, playing, time, duration, on
 
 
     return (
-        <div className="absolute right-4 top-4 z-[5] w-[240px] rounded-2xl border border-white/25 bg-[rgba(24,26,32,0.75)] p-3 text-white shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-[16px]"
+        <div className="w-[240px] rounded-2xl border border-white/25 bg-[rgba(24,26,32,0.75)] p-3 text-white shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-[16px]"
         >
             <button
             onClick={onOpen}

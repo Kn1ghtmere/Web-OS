@@ -1,50 +1,24 @@
-import { useState, useEffect } from 'react';
-import type { MouseEvent as ReactMouseEvent} from 'react';
-import { Check , Minus , Plus , Trash2, X} from 'lucide-react';
+import { useState } from 'react';
+import type { Dispatch, MouseEvent as ReactMouseEvent, SetStateAction} from 'react';
+import { Check , Minus , Plus , Trash2, X , Pin} from 'lucide-react';
+import { dateKey, dueLabel } from '../components/todo/todoUtils';
+import type { Task } from '../components/todo/todoUtils';
+import type { WidgetType } from '../components/widgets/widgets';
 
-interface Task {
-    id: number;
-    text: string;
-    deadline: string;
-    done: boolean;
-}
-
-const STORAGE_KEY = 'webos-todos';
-const pad = (n: number) => (n < 10 ? '0' + n : '' + n);
-
-const dateKey = (d: Date) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
-
-
-const loadTasks = (): Task[] => {
-    try {
-        const raw  = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : [];
-    } catch {
-        return [];
-    }
-};
-
-const dueLabel = (deadline: string, todayKey: string) => {
-    if(!deadline) return 'No deadline';
-    if (deadline === todayKey) return 'Today';
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    if(deadline === dateKey(tomorrow)) return 'Tomorrow';
-    const [y, m, d] = deadline.split('-').map(Number);
-    return new Date(y, m - 1, d).toLocaleDateString([], {day: 'numeric', month: 'short'});
-};
 
 
 interface TodoProps {
-    zIndex: number;
+     zIndex: number;
     onFocus: () => void;
     onMinimize: () => void;
     onClose: () => void;
-    
+    tasks: Task[];
+    setTasks: Dispatch<SetStateAction<Task[]>>;
+    hasWidget: (id: string) => boolean;
+    toggleWidget: (id: string, type: WidgetType, taskId?: number) => void;
 }
 
-export default function Todo({ zIndex, onFocus, onMinimize, onClose}: TodoProps) {
-    const [tasks, setTasks] = useState<Task[]>(loadTasks);
+export default function Todo({ zIndex, onFocus, onMinimize, onClose, tasks, setTasks, hasWidget, toggleWidget }: TodoProps) {
     const [text, setText] = useState('');
     const [deadline, setDeadline] = useState('');
     const [pos, setPos] = useState({
@@ -52,13 +26,6 @@ export default function Todo({ zIndex, onFocus, onMinimize, onClose}: TodoProps)
         y: Math.max(12, window.innerHeight / 2 -250),
     });
 
-    useEffect (() => {
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-        } catch {
-            return;
-        }
-    }, [tasks]);
 
 
     const todayKey = dateKey(new Date());
@@ -159,7 +126,18 @@ export default function Todo({ zIndex, onFocus, onMinimize, onClose}: TodoProps)
             <Plus size={16}/>
             </button>
             </div>
-
+             
+             <div className="flex shrink-0 items-center justify-between border-b border-[#1b1b1b] px-4 py-2 text-xs text-gray-400">
+                <span>Recent Tasks Widget</span>
+                <button
+                onClick={() => toggleWidget('todo-recent', 'todo-recent')}
+                className={`cursor-pointer rounded-md border-none px-2.5 py-1 text-xs text-white ${
+                    hasWidget('todo-recent') ? 'bg-[#3584e4]' : 'bg-[#3d3d3d] hover:bg-[#4a4a4a]'
+                }`}
+                >
+                    {hasWidget('todo-recent') ? 'On' : 'Off'}
+                </button>
+             </div>
 
             <div className="flex-1 overflow-y-auto [color-scheme:dark]">
             {sorted.length === 0 && (
@@ -193,7 +171,15 @@ export default function Todo({ zIndex, onFocus, onMinimize, onClose}: TodoProps)
                         {dueLabel(t.deadline,todayKey)}
                     </div>
                 </div>
+                  <button
+                  onClick={() => toggleWidget('todo-task-' + t.id, 'todo-task', t.id)}
+                  title={hasWidget('todo-task-' + t.id) ? 'Remove-widget' : 'Pin as widget'}
+                  className={`cursor-pointer ${hasWidget('todo-task-' + t.id) ? 'text-[#78aeed]' : 'text-gray-500 hover:text-white'}`}
+                  >
+                    <Pin size={14} />
+        
 
+                  </button>
                 <button
                 onClick={() => remove(t.id)}
                 title="Delete task"

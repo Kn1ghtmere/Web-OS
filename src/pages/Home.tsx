@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import type { MouseEvent as ReactMouseEvent } from "react";
+import type { MouseEvent as ReactMouseEvent , ReactNode} from "react";
 
 import {dockItems} from "../components/dock/dockItems";
 import DialDock from '../components/dock/DialDock';
@@ -12,6 +12,13 @@ import Clock from '../pages/Clock';
 import Todo from './Todo';
 import Terminal from "../pages/Terminal";
 import Waybar from "../pages/Waybar";
+import WidgetFrame from '../components/widgets/WidgetFrame';
+import WidgetTrash from '../components/widgets/WidgetTrash';
+import TodoWidget from '../components/widgets/TodoWidget';
+import { loadWidgets, saveWidgets } from '../components/widgets/widgets';
+import type { WidgetInstance , WidgetType } from '../components/widgets/widgets';
+import { loadTasks, saveTasks } from '../components/todo/todoUtils';
+import type { Task } from '../components/todo/todoUtils';
 
 
 import {
@@ -38,7 +45,9 @@ export default function Home() {
   const [hovered, setHovered] = useState<number | null>(null);
   const [minimized, setMinimized] = useState<WindowId[]>([]);
 
-
+  const [tasks, setTasks] = useState<Task[]>(loadTasks);
+  const [widgets, setWidgets] = useState<WidgetInstance[]>(loadWidgets);
+  const [drag, setDrag] = useState({ dragging: false , overTrash: false});
 
 
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -49,6 +58,22 @@ export default function Home() {
 
   const updateSettings = (patch: Partial<SettingsState>) =>
     setSettings((prev) => ({ ...prev, ...patch }));
+
+  useEffect(() => {
+    saveTasks(tasks);
+    },[tasks]);
+
+
+  useEffect(() => {
+    saveWidgets(widgets);
+  },[widgets]);
+
+  useEffect(() => {
+    setWidgets((prev) => {
+      const next = prev.filter((w) => w.type !== 'todo-task' || tasks.some((t) => t.id === w.taskId));
+      return next.length === prev.length ? prev : next;
+    });
+  },[tasks]);
 
   const bringToFront = (id: WindowId) => {
   setMinimized((prev) => (prev.includes(id) ? prev.filter((w) => w !== id) : prev));
@@ -64,6 +89,53 @@ export default function Home() {
     setOpenWindows((prev) => prev.filter((w) => w !== id));
     setMinimized((prev) => prev.filter((w) => w !== id));
   };
+
+
+  const hasWidget = (id: string) => widgets.some((w) => w.id === id);
+
+  const toggleWidget = (id: string, type: WidgetType, taskId?: number) =>
+    setWidgets((prev) => 
+    prev.some((w) => w.id === id)
+? prev.filter((w) => w.id !== id)
+ : [...prev, {id, type, taskId, x: window.innerWidth - 264, y: 56 + prev.length * 130}]);
+
+
+ 
+  const moveWidget = (id: string, x: number, y: number) => 
+    setWidgets((prev) => prev.map((w) => (w.id === id ? {...w, x, y } : w )));
+
+  const removeWidget = (id: string) => setWidgets((prev) => prev.filter((w) => w.id !== id));
+
+
+  const handleDrag = (dragging: boolean, overTrash: boolean) => 
+    setDrag((prev) => 
+    prev.dragging === dragging && prev.overTrash === overTrash ? prev : { dragging, overTrash});
+
+
+  const toggleTask = (id: number) => 
+    setTasks((prev) => prev.map((t) => (t.id === id ? {...t, done: !t.done } : t )));
+
+  const renderWidget = (id: string, content: ReactNode) => {
+    const w = widgets.find((x) => x.id === id);
+    if (!w) return null;
+    return (
+      <WidgetFrame
+      key={w.id}
+      x={w.x}
+      y={w.y}
+      onMove={(x,y) => moveWidget(w.id, x, y)}
+      onDragChange={handleDrag}
+      onRemove={() => removeWidget(w.id)}
+      >
+        {content}
+      </WidgetFrame>
+    );
+  };
+ 
+
+
+
+
 
 
   const topWindow = openWindows[openWindows.length - 1];
@@ -185,6 +257,9 @@ export default function Home() {
           onFocus={()=> bringToFront('music')}
           onMinimize={() => minimizeWindow('music')}
           onClose={()=> closeWindow('music')}
+          widgetOn={hasWidget('music')}
+          onToggleWidget={() => toggleWidget('music' , 'music')}
+          renderWidget={renderWidget}
           />
       )}
 
@@ -195,6 +270,10 @@ export default function Home() {
           onFocus={() => bringToFront('todo')}
           onMinimize={() => minimizeWindow('todo')}
           onClose={() => closeWindow('todo')}
+          tasks={tasks}
+          setTasks={setTasks}
+          hasWidget={hasWidget}
+          toggleWidget={toggleWidget}
           />
           </div>
       )}
@@ -206,7 +285,26 @@ export default function Home() {
     onClose={() => closeWindow('file-manager')}
   />
 )}
+
+
+
+    
+    {widgets
+    .filter((w) => w.type !== 'music')
+    .map((w) => 
+    renderWidget(
+      w.id,
+      <TodoWidget
+      mode={w.type === 'todo-recent' ? 'recent' : 'task'}
+      tasks={tasks}
+      taskId={w.taskId}
+      onToggle={toggleTask}
+      onOpen={() => bringToFront('todo')}
+      />
+    ))}
       
+     <WidgetTrash visible={drag.dragging} active={drag.overTrash} />
+
       {settings.dockStyle ==='dial' && (
         <DialDock
          items={dockItems}
