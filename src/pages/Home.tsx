@@ -325,7 +325,9 @@ export default function Home() {
 
       
 
-      <div className="pointer-events-none absolute bottom-3 left-0 right-0 z-[1000] flex justify-center">
+      <div className="pointer-events-none absolute left-0 right-0 z-[1000] flex justify-center"
+           style={{ bottom: drag.dragging ? 96 : 12, transition: 'bottom 200ms ease-out'}}
+      >
         <div
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
