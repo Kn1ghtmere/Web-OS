@@ -7,8 +7,9 @@ import fileManagerIcon from '../assets/icons/file-manager.svg';
 import musicIcon from '../assets/icons/gnome-music.svg';
 import notesIcon from '../assets/icons/gnome-todo.svg';
 import settingsIcon from '../assets/icons/settings-icon.svg';
+import cameraIcon from '../assets/icons/camera.png'
 import terminalIcon from '../assets/icons/terminal.svg';
-
+import CameraBooth from './CameraBooth';
 import FileManager from './Filemanager';
 import Settings from './Settings';
 import MusicPlayer from './MusicPlayer';
@@ -31,15 +32,15 @@ interface DockItem {
   icon: string;
 }
 
-type WindowId = 'settings' | 'music' | 'notes' | 'file-manager' | 'calculator' | 'calendar';
+type WindowId = 'settings' | 'music' | 'notes' | 'file-manager' | 'calculator' | 'calendar'|"camera";
 
 const isWindowId = (id: string): id is WindowId =>
   id === 'settings' ||
   id === 'music' ||
   id === 'notes' ||
-  id === 'file-manager' ||
-  id === 'calculator' ||
-  id === 'calendar';
+  id === 'file-manager' 
+  || id === 'calculator' ||id === 'calendar'
+  || id==='camera';
 
 const dockItems: DockItem[] = [
   { id: 'file-manager', label: 'Files', icon: fileManagerIcon },
@@ -49,7 +50,9 @@ const dockItems: DockItem[] = [
   { id: 'calculator', label: 'Calculator', icon: calcIcon },
   { id: 'calendar', label: 'Calendar', icon: calendarIcon },
   { id: 'settings', label: 'Settings', icon: settingsIcon },
+  {id:'camera',label:"Camera",icon:cameraIcon}
 ];
+
 
 export default function Home() {
   const [settings, setSettings] = useState<SettingsState>(loadSettings);
@@ -159,6 +162,7 @@ export default function Home() {
         />
       )}
 
+      
       {openWindows.includes('calculator') && (
         <Calculator
           zIndex={10 + openWindows.indexOf('calculator')}
@@ -176,6 +180,13 @@ export default function Home() {
         />
       )}
 
+      {openWindows.includes('camera') && (
+  <CameraBooth
+    zIndex={10 + openWindows.indexOf('camera')}
+    onFocus={() => bringToFront('camera')}
+    onClose={() => closeWindow('camera')}
+  />
+)}
       <div className="pointer-events-none absolute bottom-3 left-0 right-0 z-[1000] flex justify-center">
         <div
           onMouseMove={handleMouseMove}
