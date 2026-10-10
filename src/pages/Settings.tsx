@@ -1,6 +1,6 @@
-
 import { useState } from 'react';
-import type { CSSProperties, MouseEvent as ReactMouseEvent, ReactNode } from 'react';
+import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react';
+import { X } from 'lucide-react';
 import BackgroundSwitcher from '../components/settings/BacgroundSwitcher';
 import type { SettingsState } from '../components/settings/SettingsConfig';
 
@@ -21,14 +21,14 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (value: boo
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="relative h-[26px] w-11 cursor-pointer rounded-[13px] border-none p-0 transition-colors duration-150"
-      style={{
-        background: checked ? '#3b82f6' : 'rgba(255,255,255,0.25)',
-      }}
+      className={`relative h-[26px] w-11 cursor-pointer rounded-[13px] border-none p-0 transition-colors duration-150 ${
+        checked ? 'bg-blue-500' : 'bg-white/25'
+      }`}
     >
       <span
-        className="absolute top-[3px] h-5 w-5 rounded-full bg-white transition-[left] duration-150"
-        style={{ left: checked ? 21 : 3 }}
+        className={`absolute top-[3px] h-5 w-5 rounded-full bg-white transition-[left] duration-150 ${
+          checked ? 'left-[21px]' : 'left-[3px]'
+        }`}
       />
     </button>
   );
@@ -84,9 +84,11 @@ interface SettingsProps {
   onChange: (patch: Partial<SettingsState>) => void;
   onReset: () => void;
   onClose: () => void;
+  zIndex: number;
+  onFocus: () => void;
 }
 
-export default function Settings({ settings, onChange, onReset, onClose }: SettingsProps) {
+export default function Settings({ settings, onChange, onReset, onClose, zIndex, onFocus }: SettingsProps) {
   const [tab, setTab] = useState<Tab>('wallpaper');
   const [pos, setPos] = useState(() => ({
     x: Math.max(12, (window.innerWidth - WIDTH) / 2),
@@ -96,30 +98,24 @@ export default function Settings({ settings, onChange, onReset, onClose }: Setti
   const startDrag = (e: ReactMouseEvent) => {
     const offX = e.clientX - pos.x;
     const offY = e.clientY - pos.y;
-    const move = (ev: MouseEvent) => setPos({ x: ev.clientX - offX, y: Math.max(0, ev.clientY - offY) });
+
+    const move = (ev: MouseEvent) => {
+      setPos({ x: ev.clientX - offX, y: Math.max(0, ev.clientY - offY) });
+    };
     const up = () => {
       window.removeEventListener('mousemove', move);
       window.removeEventListener('mouseup', up);
     };
+
     window.addEventListener('mousemove', move);
     window.addEventListener('mouseup', up);
   };
 
-  const tabStyle = (active: boolean): CSSProperties => ({
-    background: active ? 'rgba(59,130,246,0.85)' : 'transparent',
-  });
-
   return (
     <div
-      className="absolute z-10 flex flex-col overflow-hidden box-border rounded-xl border border-white/25 text-white shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
-      style={{
-        left: pos.x,
-        top: pos.y,
-        width: WIDTH,
-        height: HEIGHT,
-        maxWidth: 'calc(100vw - 24px)',
-        maxHeight: 'calc(100vh - 24px)',
-      }}
+      onMouseDown={onFocus}
+      className="absolute box-border flex max-h-[calc(100vh_-_24px)] max-w-[calc(100vw_-_24px)] flex-col overflow-hidden rounded-xl border border-white/25 text-white shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+      style={{ left: pos.x, top: pos.y, width: WIDTH, height: HEIGHT, zIndex }}
     >
       <div
         onMouseDown={startDrag}
@@ -129,9 +125,9 @@ export default function Settings({ settings, onChange, onReset, onClose }: Setti
         <button
           onMouseDown={(e) => e.stopPropagation()}
           onClick={onClose}
-          className="h-7 w-7 cursor-pointer rounded-md border-none bg-transparent text-base text-white"
+          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-white hover:bg-red-500"
         >
-          ×
+          <X size={16} />
         </button>
       </div>
 
@@ -141,8 +137,9 @@ export default function Settings({ settings, onChange, onReset, onClose }: Setti
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className="w-full cursor-pointer rounded-lg border-none px-3.5 py-2.5 text-left text-sm text-white"
-              style={tabStyle(tab === t.id)}
+              className={`w-full cursor-pointer rounded-lg border-none px-3.5 py-2.5 text-left text-sm text-white ${
+                tab === t.id ? 'bg-blue-500/[0.85]' : 'bg-transparent hover:bg-white/10'
+              }`}
             >
               {t.label}
             </button>
@@ -195,7 +192,7 @@ export default function Settings({ settings, onChange, onReset, onClose }: Setti
               <Row label="Reset settings" hint="Restore the wallpaper and dock to their defaults">
                 <button
                   onClick={onReset}
-                  className="cursor-pointer rounded-lg border-none bg-[rgba(239,68,68,0.8)] px-4 py-2 text-sm text-white"
+                  className="cursor-pointer rounded-lg border-none bg-red-500/80 px-4 py-2 text-sm text-white hover:bg-red-500"
                 >
                   Reset
                 </button>

@@ -8,11 +8,14 @@ import musicIcon from '../assets/icons/gnome-music.svg';
 import notesIcon from '../assets/icons/gnome-todo.svg';
 import settingsIcon from '../assets/icons/settings-icon.svg';
 import terminalIcon from '../assets/icons/terminal.svg';
+
 import FileManager from './Filemanager';
 import Settings from './Settings';
 import MusicPlayer from './MusicPlayer';
 import Notes from './Notes';
+import Calculator from './Calculator';
 import Calendar from './Calender';
+
 import {
   wallpapers,
   defaultSettings,
@@ -28,18 +31,22 @@ interface DockItem {
   icon: string;
 }
 
-type WindowId = 'settings' | 'music' | 'notes'|'file-manager'
+type WindowId = 'settings' | 'music' | 'notes' | 'file-manager' | 'calculator' | 'calendar';
 
 const isWindowId = (id: string): id is WindowId =>
-  id === 'settings' || id === 'music' || id === 'notes' || id==='calendar'||
-  id=='file-manager';
+  id === 'settings' ||
+  id === 'music' ||
+  id === 'notes' ||
+  id === 'file-manager' ||
+  id === 'calculator' ||
+  id === 'calendar';
 
 const dockItems: DockItem[] = [
   { id: 'file-manager', label: 'Files', icon: fileManagerIcon },
   { id: 'terminal', label: 'Terminal', icon: terminalIcon },
   { id: 'notes', label: 'Notes', icon: notesIcon },
   { id: 'music', label: 'Music', icon: musicIcon },
-  { id: 'calc', label: 'Calculator', icon: calcIcon },
+  { id: 'calculator', label: 'Calculator', icon: calcIcon },
   { id: 'calendar', label: 'Calendar', icon: calendarIcon },
   { id: 'settings', label: 'Settings', icon: settingsIcon },
 ];
@@ -144,22 +151,30 @@ export default function Home() {
         />
       )}
 
-      {openWindows.includes('calendar')&&(
+      {openWindows.includes('calendar') && (
         <Calendar
-            zIndex={10+openWindows.indexOf('calendar')}
-            onFocus={()=>bringToFront('calendar')}
-            onClose={()=>closeWindow('calendar')}
+          zIndex={10 + openWindows.indexOf('calendar')}
+          onFocus={() => bringToFront('calendar')}
+          onClose={() => closeWindow('calendar')}
         />
       )}
-    {openWindows.includes('file-manager') && (
-  <FileManager
-    zIndex={10 + openWindows.indexOf('file-manager')}
-    onFocus={() => bringToFront('file-manager')}
-    onClose={() => closeWindow('file-manager')}
-  />
-)}
 
-      
+      {openWindows.includes('calculator') && (
+        <Calculator
+          zIndex={10 + openWindows.indexOf('calculator')}
+          focused={topWindow === 'calculator'}
+          onFocus={() => bringToFront('calculator')}
+          onClose={() => closeWindow('calculator')}
+        />
+      )}
+
+      {openWindows.includes('file-manager') && (
+        <FileManager
+          zIndex={10 + openWindows.indexOf('file-manager')}
+          onFocus={() => bringToFront('file-manager')}
+          onClose={() => closeWindow('file-manager')}
+        />
+      )}
 
       <div className="pointer-events-none absolute bottom-3 left-0 right-0 z-[1000] flex justify-center">
         <div
@@ -228,5 +243,3 @@ export default function Home() {
     </div>
   );
 }
-
-
