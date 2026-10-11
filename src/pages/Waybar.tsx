@@ -93,7 +93,7 @@ export default function Waybar({
       >
         <span className="h-2 w-2 rounded-full bg-pink-500 shadow-[0_0_8px_#ec4899] animate-pulse"/>
 
-        <span>WofOS</span>
+        <span>LarpOS</span>
       </button>
 
      
@@ -143,7 +143,7 @@ export default function Waybar({
             >
 
               <FiInfo size={14} className="text-pink-400"/>
-              <span>About WofOS</span>
+              <span>About LarpOS</span>
             </button>
 
 
