@@ -417,6 +417,8 @@ export default function Home() {
          opacity={settings.dockOpacity}
          magnification={settings.magnification}
          magnificationAmount={settings.magnificationAmount}
+         onOpenGrid={() => setGridOpen((open) => !open)}
+         gridOpen={gridOpen}
          />
       )}
       

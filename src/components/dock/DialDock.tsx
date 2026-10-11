@@ -1,7 +1,8 @@
 
 import { useState } from "react";
 import { useRef } from "react";
-
+import { LayoutGrid } from 'lucide-react';
+ 
 interface DialItem {
     id: string;
     label: string;
@@ -18,11 +19,13 @@ interface DialDockProps {
     opacity: number;
     magnification: boolean;
     magnificationAmount: number;
+    onOpenGrid: () => void;
+    gridOpen: boolean;
 
 }
 const STEP = (35 * Math.PI) / 180;
 
-export default function DialDock({ items, iconSize, onItemClick, showLabels, openIds, minimizedIds, opacity, magnification, magnificationAmount }: DialDockProps) {
+export default function DialDock({ items, iconSize, onItemClick, showLabels, openIds, minimizedIds, opacity, magnification, magnificationAmount, onOpenGrid, gridOpen }: DialDockProps) {
 
     const [active, setActive] = useState(0);
     const [hovered, setHovered] = useState(false);
@@ -32,6 +35,8 @@ export default function DialDock({ items, iconSize, onItemClick, showLabels, ope
 
     const n = items.length;
     const radius = hovered ? 150 : 90;
+    const hubX = hovered ? -(iconSize / 2 + 14) : -radius;
+    const hubScale = magnification && hoveredId === 'app-grid' ? 1 + magnificationAmount / 100 : 1;
 
    const handleWheel = (e: React.WheelEvent) => {
     const now = performance.now();
@@ -60,7 +65,7 @@ export default function DialDock({ items, iconSize, onItemClick, showLabels, ope
             if(offset > n / 2) offset -= n;
             if(offset < -n / 2) offset += n;
 
-            const visible = offset === 0 || (hovered && Math.abs(offset) === 1);
+            const visible = hovered && Math.abs(offset) === 1;
             const angle = offset * STEP;
             const x = -radius * Math.cos(angle);
             const y = -radius * Math.sin(angle);
@@ -109,6 +114,44 @@ export default function DialDock({ items, iconSize, onItemClick, showLabels, ope
                 </div>
             );
         })}
+
+       
+       <div
+       onClick={onOpenGrid}
+       onMouseEnter={() => setHoveredId('app-grid')}
+       onMouseLeave={() => setHoveredId(null)}
+       className="absolute left-0 top-0 cursor-pointer"
+       style={{
+        width: iconSize,
+        height: iconSize,
+        transform: `translate(${hubX - iconSize / 2}px, ${-iconSize /2}px)`,
+        transition: 'transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+       }}
+       >
+        
+        {showLabels && hoveredId === 'app-grid' && (
+            <span
+            className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 whitespace-nowrap rounded-md bg-[rgba(20,20,25,0.85)] px-[10px] py-1 text-white text-xs"
+            style={{ marginRight: 12 + (iconSize * (hubScale - 1 )) /2 }}
+            >
+                Apps
+            </span>
+
+        )}
+
+        <div
+        className={`flex h-full w-full items-center justify-center rounded-xl text-white ${
+            gridOpen ? 'bg-white/35' : 'bg-white/20 hover:bg-white/30'
+        }`}
+        style={{ transform: `scale(${hubScale})`, transition: 'transform 100ms ease-out'}}
+        >
+            <LayoutGrid size={Math.round(iconSize * 0.5)} />
+        </div>
+
+
+       </div>
+
+
         </div>
     );
 }
