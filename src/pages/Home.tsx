@@ -15,6 +15,9 @@ import Waybar from "../pages/Waybar";
 import About from "../pages/About";
 import Gallery from "../pages/Gallery";
 import galley from "../assets/icons/gallery.webp"
+import Weather from "../pages/Weather";
+import weather from "../assets/icons/weather.png";
+
 
 import Settings from "./Settings";
 
@@ -33,13 +36,14 @@ interface DockItem {
   icon: string;
 }
 
-type WindowId = "settings" | "calc" | "music" | "about" | "clock" | "terminal" | "gallery" ;
+type WindowId = "settings" | "calc" | "music" | "about" | "clock" |"weather" | "terminal" | "gallery" ;
 
 const isWindowId = (id: string): id is WindowId =>
   id === "settings" ||
   id === "terminal" ||
   id === "calc" ||
   id === "music" ||
+  id === "weather"||
   id === "clock" ||
   id === "gallery"||
   id === "about";
@@ -51,6 +55,7 @@ const dockItems: DockItem[] = [
   { id: "clock", label: "Clock", icon: clock },
   { id: "gallery", label: "Gallery", icon : galley },
   { id: "music", label: "Music", icon: musicIcon },
+  { id: "weather", label :"Weather" , icon :weather},
   { id: "calc", label: "Calculator", icon: calcIcon },
   { id: "calendar", label: "Calendar", icon: calendarIcon },
   { id: "settings", label: "Settings", icon: settingsIcon },
@@ -178,6 +183,13 @@ export default function Home() {
           onFocus={() => bringToFront("clock")}
         />
       )}
+      {openWindows.includes("weather") && (
+  <Weather
+    onClose={() => closeWindow("weather")}
+    zIndex={10 + openWindows.indexOf("weather")}
+    onFocus={() => bringToFront("weather")}
+  />
+)}
       {openWindows.includes("terminal") && (
         <Terminal
           onClose={() => closeWindow("terminal")}
