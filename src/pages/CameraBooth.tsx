@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import { Camera, Download, RotateCcw, X } from 'lucide-react';
 
+
 const SHOTS = 4;
 
 const filters = [
@@ -336,5 +337,4 @@ export default function CameraBooth({ zIndex, onFocus, onClose }: CameraBoothPro
     </div>
   );
 }
-
 

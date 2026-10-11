@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
+import { LayoutGrid } from 'lucide-react';
 
 import calcIcon from '../assets/icons/calc.svg';
 import calendarIcon from '../assets/icons/calendar.svg';
@@ -7,15 +8,17 @@ import fileManagerIcon from '../assets/icons/file-manager.svg';
 import musicIcon from '../assets/icons/gnome-music.svg';
 import notesIcon from '../assets/icons/gnome-todo.svg';
 import settingsIcon from '../assets/icons/settings-icon.svg';
-import cameraIcon from '../assets/icons/camera.png'
 import terminalIcon from '../assets/icons/terminal.svg';
-import CameraBooth from './CameraBooth';
+import cameraIcon from '../assets/icons/camera.png';
+
 import FileManager from './Filemanager';
+import CameraBooth from './CameraBooth';
 import Settings from './Settings';
 import MusicPlayer from './MusicPlayer';
 import Notes from './Notes';
 import Calculator from './Calculator';
 import Calendar from './Calender';
+import AppGrid from './Appgrid';
 
 import {
   wallpapers,
@@ -26,23 +29,31 @@ import {
 
 import type { SettingsState } from '../components/settings/SettingsConfig';
 
-interface DockItem {
+interface AppItem {
   id: string;
   label: string;
   icon: string;
 }
 
-type WindowId = 'settings' | 'music' | 'notes' | 'file-manager' | 'calculator' | 'calendar'|"camera";
+type WindowId =
+  | 'settings'
+  | 'music'
+  | 'notes'
+  | 'file-manager'
+  | 'calculator'
+  | 'calendar'
+  | 'camera-booth';
 
 const isWindowId = (id: string): id is WindowId =>
   id === 'settings' ||
   id === 'music' ||
   id === 'notes' ||
-  id === 'file-manager' 
-  || id === 'calculator' ||id === 'calendar'
-  || id==='camera';
+  id === 'file-manager' ||
+  id === 'calculator' ||
+  id === 'calendar' ||
+  id === 'camera-booth';
 
-const dockItems: DockItem[] = [
+const apps: AppItem[] = [
   { id: 'file-manager', label: 'Files', icon: fileManagerIcon },
   { id: 'terminal', label: 'Terminal', icon: terminalIcon },
   { id: 'notes', label: 'Notes', icon: notesIcon },
@@ -50,13 +61,28 @@ const dockItems: DockItem[] = [
   { id: 'calculator', label: 'Calculator', icon: calcIcon },
   { id: 'calendar', label: 'Calendar', icon: calendarIcon },
   { id: 'settings', label: 'Settings', icon: settingsIcon },
-  {id:'camera',label:"Camera",icon:cameraIcon}
+  { id: 'camera-booth', label: 'Camera Booth', icon: cameraIcon },
 ];
 
+const pinned = [
+  'file-manager',
+  'terminal',
+  'notes',
+  'music',
+  'calculator',
+  'calendar',
+  'settings',
+  'camera-booth',
+];
+
+const dockItems = pinned
+  .map((id) => apps.find((a) => a.id === id))
+  .filter((a): a is AppItem => Boolean(a));
 
 export default function Home() {
   const [settings, setSettings] = useState<SettingsState>(loadSettings);
   const [openWindows, setOpenWindows] = useState<WindowId[]>([]);
+  const [gridOpen, setGridOpen] = useState(false);
   const [scales, setScales] = useState<number[]>(dockItems.map(() => 1));
   const [hovered, setHovered] = useState<number | null>(null);
 
@@ -82,8 +108,16 @@ export default function Home() {
   const handleItemClick = (id: string) => {
     if (!isWindowId(id)) return;
 
+    setGridOpen(false);
     if (!openWindows.includes(id) || topWindow !== id) bringToFront(id);
     else closeWindow(id);
+  };
+
+  const openFromGrid = (id: string) => {
+    if (!isWindowId(id)) return;
+
+    bringToFront(id);
+    setGridOpen(false);
   };
 
   const wallpaper =
@@ -162,7 +196,6 @@ export default function Home() {
         />
       )}
 
-      
       {openWindows.includes('calculator') && (
         <Calculator
           zIndex={10 + openWindows.indexOf('calculator')}
@@ -180,13 +213,18 @@ export default function Home() {
         />
       )}
 
-      {openWindows.includes('camera') && (
-  <CameraBooth
-    zIndex={10 + openWindows.indexOf('camera')}
-    onFocus={() => bringToFront('camera')}
-    onClose={() => closeWindow('camera')}
-  />
-)}
+      {openWindows.includes('camera-booth') && (
+        <CameraBooth
+          zIndex={10 + openWindows.indexOf('camera-booth')}
+          onFocus={() => bringToFront('camera-booth')}
+          onClose={() => closeWindow('camera-booth')}
+        />
+      )}
+
+      {gridOpen && (
+        <AppGrid apps={apps} onOpen={openFromGrid} onClose={() => setGridOpen(false)} />
+      )}
+
       <div className="pointer-events-none absolute bottom-3 left-0 right-0 z-[1000] flex justify-center">
         <div
           onMouseMove={handleMouseMove}
@@ -249,9 +287,21 @@ export default function Home() {
               </div>
             );
           })}
+
+          <div className="h-10 w-px shrink-0 self-center bg-white/30" />
+
+          <button
+            onClick={() => setGridOpen((open) => !open)}
+            title="Show apps"
+            className={`flex shrink-0 cursor-pointer items-center justify-center rounded-xl border-none text-white ${
+              gridOpen ? 'bg-white/35' : 'bg-white/20 hover:bg-white/30'
+            }`}
+            style={{ width: iconSize, height: iconSize }}
+          >
+            <LayoutGrid size={Math.round(iconSize * 0.5)} />
+          </button>
         </div>
       </div>
     </div>
   );
 }
-
