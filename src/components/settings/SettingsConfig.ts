@@ -8,7 +8,14 @@ import gruvbox from "../../assets/backgrounds/gruvbox_witcher.png"
 import yellow from "../../assets/backgrounds/yellow_kyoto.jpg"
 import lain2 from "../../assets/backgrounds/lain2.jpg"
 import bisbis from "../../assets/backgrounds/bisbiswas-gathering.jpg"
-import { TbChevronDownFilled } from 'react-icons/tb';
+import geo from "../../assets/backgrounds/geo.jpg";
+import fkas from "../../assets/backgrounds/fkas.png"
+import begtree from '../../assets/backgrounds/begtree.png';
+import girlhead from '../../assets/backgrounds/girlhead.png'
+import glasses from '../../assets/backgrounds/glasses.png'
+import linux from '../../assets/backgrounds/linux.png'
+import Lady from '../../assets/backgrounds/Lady.png'
+import skeleton from '../../assets/backgrounds/skeleton.jpg'
 
 export interface Wallpaper {
    id: string;
@@ -19,6 +26,18 @@ export interface Wallpaper {
 
 export const wallpapers: Wallpaper[] = [
 { id: 'japan', name: 'Japan', src: japan },
+{ id: 'girlhead', name: 'girlhhead', src: girlhead },
+{ id: 'begtree', name: 'begtree', src: begtree },
+{ id: 'glasses', name: 'glasses', src: glasses },
+{ id: 'linux', name: 'linux', src: linux },
+{ id: 'skeleton', name: 'skeleton', src: skeleton },
+{ id: 'geo', name: 'geo', src: geo },
+{ id: 'lady', name: 'lady', src: Lady},
+
+{ id: 'fkas', name: 'fkas', src: fkas },
+
+
+
   { id: 'lain', name: 'Lain', src: lain },
 { id: 'mountains', name: 'OLED Mountains', src: mountains },
   { id: 'balcony', name: 'Balcony', src: balcony },

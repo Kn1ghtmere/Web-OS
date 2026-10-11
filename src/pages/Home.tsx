@@ -59,6 +59,7 @@ const dockItems: DockItem[] = [
 export default function Home() {
   const [settings, setSettings] = useState<SettingsState>(loadSettings);
   const [openWindows, setOpenWindows] = useState<WindowId[]>([]);
+  const [openImages, setOpenImages] = useState<Photo[]>([]); 
   const [scales, setScales] = useState<number[]>(dockItems.map(() => 1));
   const [hovered, setHovered] = useState<number | null>(null);
 
@@ -151,8 +152,25 @@ export default function Home() {
           onClose={() => closeWindow("gallery")}
           zIndex={10 + openWindows.indexOf("gallery")}
           onFocus={() => bringToFront("gallery")}
+          onSelectPhoto={(photo) => {
+            if (!openImages.some((p) => p.id === photo.id)) {
+              setOpenImages((prev) => [...prev, photo]);
+            }
+          }}
         />
       )}
+      {openImages.map((photo, index) => (
+        <ImageViewer
+          key={photo.id}
+          photo={photo}
+          onClose={() => setOpenImages((prev) => prev.filter((p) => p.id !== photo.id))}
+          zIndex={50 + index}
+          onFocus={() => {
+            // Move focused image to the end of the array to bring it to front
+            setOpenImages((prev) => [...prev.filter((p) => p.id !== photo.id), photo]);
+          }}
+        />
+      ))}
       {openWindows.includes("clock") && (
         <Clock
           onClose={() => closeWindow("clock")}
