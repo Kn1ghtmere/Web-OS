@@ -27,7 +27,6 @@ export const dockItems: DockItem[] = [
   { id: 'settings', label: 'Settings', icon: settingsIcon },
   { id: 'notes' , label: 'Notes', icon: todoIcon},
   { id: "clock", label: "Clock", icon: clock },
-  { id: 'calculator', label: 'Calculator', icon: calcIcon},
   { id: 'camera-booth', label: 'Camera Booth', icon: cameraIcon},
   { id: 'gallery', label: 'Gallery', icon: gallery},
   { id: 'weather', label:'weather', icon: weather},
