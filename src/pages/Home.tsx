@@ -4,8 +4,10 @@ import type { MouseEvent as ReactMouseEvent , ReactNode} from "react";
 import {dockItems} from "../components/dock/dockItems";
 import DialDock from '../components/dock/DialDock';
 import FileManager from './Filemanager';
+import CameraBooth from './CameraBooth';
 import Settings from './Settings';
 import Notes from './Notes';
+import Calculator from './Calculator';
 import Calendar from './Calender';
 import MusicPlayer from './MusicPlayer';
 import Clock from '../pages/Clock';
@@ -21,6 +23,7 @@ import { loadTasks, saveTasks } from '../components/todo/todoUtils';
 import type { Task } from '../components/todo/todoUtils';
 import NotesWidget from '../components/widgets/NotesWidget';
 
+import AppGrid from './Appgrid';
 
 import {
   wallpapers,
@@ -38,10 +41,60 @@ const isWindowId = (id: string): id is WindowId =>
   id === 'settings' || id === 'calc' || id === 'music' || id === 'notes' || id === 'Calendar'|| id=== 'clock'|| id === 'todo'|| id=='file-manager'|| id === "terminal";
 
 
+interface AppItem {
+  id: string;
+  label: string;
+  icon: string;
+}
+
+type WindowId =
+  | 'settings'
+  | 'music'
+  | 'notes'
+  | 'file-manager'
+  | 'calculator'
+  | 'calendar'
+  | 'camera-booth';
+
+const isWindowId = (id: string): id is WindowId =>
+  id === 'settings' ||
+  id === 'music' ||
+  id === 'notes' ||
+  id === 'file-manager' ||
+  id === 'calculator' ||
+  id === 'calendar' ||
+  id === 'camera-booth';
+
+const apps: AppItem[] = [
+  { id: 'file-manager', label: 'Files', icon: fileManagerIcon },
+  { id: 'terminal', label: 'Terminal', icon: terminalIcon },
+  { id: 'notes', label: 'Notes', icon: notesIcon },
+  { id: 'music', label: 'Music', icon: musicIcon },
+  { id: 'calculator', label: 'Calculator', icon: calcIcon },
+  { id: 'calendar', label: 'Calendar', icon: calendarIcon },
+  { id: 'settings', label: 'Settings', icon: settingsIcon },
+  { id: 'camera-booth', label: 'Camera Booth', icon: cameraIcon },
+];
+
+const pinned = [
+  'file-manager',
+  'terminal',
+  'notes',
+  'music',
+  'calculator',
+  'calendar',
+  'settings',
+  'camera-booth',
+];
+
+const dockItems = pinned
+  .map((id) => apps.find((a) => a.id === id))
+  .filter((a): a is AppItem => Boolean(a));
 
 export default function Home() {
   const [settings, setSettings] = useState<SettingsState>(loadSettings);
   const [openWindows, setOpenWindows] = useState<WindowId[]>([]);
+  const [gridOpen, setGridOpen] = useState(false);
   const [scales, setScales] = useState<number[]>(dockItems.map(() => 1));
   const [hovered, setHovered] = useState<number | null>(null);
   const [minimized, setMinimized] = useState<WindowId[]>([]);
@@ -146,6 +199,16 @@ export default function Home() {
 
     if (!openWindows.includes(id) || minimized.includes(id) || topWindow !== id) bringToFront(id);
     else minimizeWindow(id);
+    setGridOpen(false);
+    if (!openWindows.includes(id) || topWindow !== id) bringToFront(id);
+    else closeWindow(id);
+  };
+
+  const openFromGrid = (id: string) => {
+    if (!isWindowId(id)) return;
+
+    bringToFront(id);
+    setGridOpen(false);
   };
 
   const wallpaper =
@@ -249,6 +312,11 @@ export default function Home() {
           zIndex={10 + openWindows.indexOf('Calendar')}
           onFocus={() => bringToFront('Calendar')}
           onClose={() => closeWindow('Calendar')}
+      {openWindows.includes('calendar') && (
+        <Calendar
+          zIndex={10 + openWindows.indexOf('calendar')}
+          onFocus={() => bringToFront('calendar')}
+          onClose={() => closeWindow('calendar')}
         />
         </div>
       )}
@@ -332,6 +400,35 @@ export default function Home() {
 
       
 
+      {openWindows.includes('calculator') && (
+        <Calculator
+          zIndex={10 + openWindows.indexOf('calculator')}
+          focused={topWindow === 'calculator'}
+          onFocus={() => bringToFront('calculator')}
+          onClose={() => closeWindow('calculator')}
+        />
+      )}
+
+      {openWindows.includes('file-manager') && (
+        <FileManager
+          zIndex={10 + openWindows.indexOf('file-manager')}
+          onFocus={() => bringToFront('file-manager')}
+          onClose={() => closeWindow('file-manager')}
+        />
+      )}
+
+      {openWindows.includes('camera-booth') && (
+        <CameraBooth
+          zIndex={10 + openWindows.indexOf('camera-booth')}
+          onFocus={() => bringToFront('camera-booth')}
+          onClose={() => closeWindow('camera-booth')}
+        />
+      )}
+
+      {gridOpen && (
+        <AppGrid apps={apps} onOpen={openFromGrid} onClose={() => setGridOpen(false)} />
+      )}
+
       <div className="pointer-events-none absolute left-0 right-0 z-[1000] flex justify-center"
            style={{ bottom: drag.dragging ? 96 : 12, transition: 'bottom 200ms ease-out'}}
       >
@@ -398,11 +495,22 @@ export default function Home() {
               </div>
             );
           })}
+
+          <div className="h-10 w-px shrink-0 self-center bg-white/30" />
+
+          <button
+            onClick={() => setGridOpen((open) => !open)}
+            title="Show apps"
+            className={`flex shrink-0 cursor-pointer items-center justify-center rounded-xl border-none text-white ${
+              gridOpen ? 'bg-white/35' : 'bg-white/20 hover:bg-white/30'
+            }`}
+            style={{ width: iconSize, height: iconSize }}
+          >
+            <LayoutGrid size={Math.round(iconSize * 0.5)} />
+          </button>
         </div>
       </div>
       )}
     </div>
   );
 }
-
-

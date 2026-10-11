@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import { ArrowUp,ChevronLeft,ChevronRight,FilePlus,FileText,
   Folder,FolderPlus,
-  House,Pencil,Trash2,
+  House,List,Pencil,Trash2,
   X,
 } from 'lucide-react';
+
 
 interface Item {
   id: string;
@@ -451,6 +452,5 @@ export default function FileManager({ zIndex, onFocus, onClose }: FileManagerPro
     </div>
   );
 }
-
 
 

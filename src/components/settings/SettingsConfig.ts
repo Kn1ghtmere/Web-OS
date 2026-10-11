@@ -8,6 +8,8 @@ import gruvbox from "../../assets/backgrounds/gruvbox_witcher.png"
 import yellow from "../../assets/backgrounds/yellow_kyoto.jpg"
 import lain2 from "../../assets/backgrounds/lain2.jpg"
 import bisbis from "../../assets/backgrounds/bisbiswas-gathering.jpg"
+import pinkMiku from "../../assets/backgrounds/pink-miku.png"
+import greenMiku from "../../assets/backgrounds/green-miku.png"
 
 export interface Wallpaper {
    id: string;
@@ -23,6 +25,8 @@ export const wallpapers: Wallpaper[] = [
   { id: 'balcony', name: 'Balcony', src: balcony },
   {id:'pink',name:"Pink Scenery",src:pink_scenery},
   {id:'gruvbox',name:"Gruvbox",src:gruvbox},
+  {id:'pink-miku',name:"Cute Miku ",src:pinkMiku},
+  {id:'green-miku',name:"Green miku",src:greenMiku},
   {id:"yellow",name:"Yellow",src:yellow},
   {id:"lain 2",name:"one more lain",src:lain2},
   {id:"bisbis",name:"bis bis idk",src:bisbis},
@@ -72,3 +76,10 @@ export function saveSettings(settings: SettingsState) {
     return;
   }
 }
+
+
+
+
+
+
+
