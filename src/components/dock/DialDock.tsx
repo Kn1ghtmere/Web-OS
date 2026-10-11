@@ -35,7 +35,7 @@ export default function DialDock({ items, iconSize, onItemClick, showLabels, ope
 
     const n = items.length;
     const radius = hovered ? 150 : 90;
-    const hubX = hovered ? -(iconSize / 2 + 14) : -radius;
+    const hubX = hovered ? -(iconSize / 2 + 10) : -(radius -28);
     const hubScale = magnification && hoveredId === 'app-grid' ? 1 + magnificationAmount / 100 : 1;
 
    const handleWheel = (e: React.WheelEvent) => {
@@ -65,7 +65,7 @@ export default function DialDock({ items, iconSize, onItemClick, showLabels, ope
             if(offset > n / 2) offset -= n;
             if(offset < -n / 2) offset += n;
 
-            const visible = hovered && Math.abs(offset) === 1;
+            const visible = hovered && Math.abs(offset) <= 1;
             const angle = offset * STEP;
             const x = -radius * Math.cos(angle);
             const y = -radius * Math.sin(angle);
