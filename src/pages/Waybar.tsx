@@ -3,20 +3,16 @@ import {
   FiTerminal,
   FiSettings,
   FiInfo,
-  FiImage,
   FiFolder,
   FiGlobe,
   FiEdit3,
   FiWifi,
   FiVolume2,
   FiVolumeX,
-  FiBatteryCharging,
-  FiMoon,
   FiBluetooth,
   FiBellOff,
   FiX,
   FiLayers,
-  FiPower,
 } from 'react-icons/fi';
 
 
@@ -60,7 +56,7 @@ export default function Waybar({
   const [isBluetooth, setIsBluetooth] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
   const trayRef = useRef<HTMLDivElement>(null);
-  const [now, setNow] = useState(new Date());
+  const [now] = useState(new Date());
 
 
   useEffect(() =>{
