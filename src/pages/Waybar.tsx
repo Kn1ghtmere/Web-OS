@@ -163,7 +163,7 @@ export default function Waybar({
         <span className=" text-[11px] font-mono text-white/20 italic select-none">No active windows</span>
 
       ): (
-        openWindows.map((id) => {
+        openWindows.map((id, i) => {
           const isActive = active === id;
 
           return(
@@ -188,6 +188,8 @@ export default function Waybar({
                     title="Close Window"
                   >
                     <FiX size={11} />
+                  {i < 9 && <span className="mr-1.5 text-white/40">{i + 1}</span>}
+                  {id}
                   </button>
         )}
             </div>

@@ -71,13 +71,31 @@ export default function Home() {
   const [tasks, setTasks] = useState<Task[]>(loadTasks);
   const [widgets, setWidgets] = useState<WidgetInstance[]>(loadWidgets);
   const [drag, setDrag] = useState({ dragging: false , overTrash: false});
-
+  const [tabOrder, setTabOrder] = useState<WindowId[]>([]);
 
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     saveSettings(settings);
   }, [settings]);
+
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!e.altKey || e.ctrlKey || e.metaKey) return;
+
+      const m = /^Digit([1-9])$/.exec(e.code);
+      if (!m) return;
+
+      const id = tabOrder[Number(m[1]) -1];
+      if (!id) return;
+
+      e.preventDefault();
+      bringToFront(id);
+    };
+
+    window.addEventListener('keydown', onKey);
+  }, [tabOrder]);
 
   const updateSettings = (patch: Partial<SettingsState>) =>
     setSettings((prev) => ({ ...prev, ...patch }));
@@ -99,6 +117,7 @@ export default function Home() {
   },[tasks]);
 
   const bringToFront = (id: WindowId) => {
+    setTabOrder((prev) => (prev.includes(id) ? prev : [...prev, id]));
   setMinimized((prev) => (prev.includes(id) ? prev.filter((w) => w !== id) : prev));
   setOpenWindows((prev) =>
     prev[prev.length - 1] === id ? prev : [...prev.filter((w) => w !== id), id]
@@ -111,6 +130,7 @@ export default function Home() {
   const closeWindow = (id: WindowId) => {
     setOpenWindows((prev) => prev.filter((w) => w !== id));
     setMinimized((prev) => prev.filter((w) => w !== id));
+    setTabOrder((prev) => prev.filter((w) => w !== id));
   };
 
 
@@ -222,7 +242,7 @@ export default function Home() {
       }}
     >
       <Waybar
-        openWindows={openWindows}
+        openWindows={tabOrder}
         active={topWindow}
         onSelect={(id) => isWindowId(id) && bringToFront(id)}
         onOpenSettings={() => bringToFront('settings')}
