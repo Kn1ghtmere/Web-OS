@@ -22,6 +22,7 @@ import type { WidgetInstance , WidgetType } from '../components/widgets/widgets'
 import { loadTasks, saveTasks } from '../components/todo/todoUtils';
 import type { Task } from '../components/todo/todoUtils';
 import NotesWidget from '../components/widgets/NotesWidget';
+import { LayoutGrid } from 'lucide-react';
 
 import AppGrid from './Appgrid';
 
@@ -35,61 +36,22 @@ import {
 import type { SettingsState } from '../components/settings/SettingsConfig';
 
 
-type WindowId = 'settings' | 'calc' | 'music' | 'notes' | 'Calendar' | 'clock'|'todo'|'file-manager'| "terminal";
-
-const isWindowId = (id: string): id is WindowId =>
-  id === 'settings' || id === 'calc' || id === 'music' || id === 'notes' || id === 'Calendar'|| id=== 'clock'|| id === 'todo'|| id=='file-manager'|| id === "terminal";
-
-
-interface AppItem {
-  id: string;
-  label: string;
-  icon: string;
-}
-
-type WindowId =
-  | 'settings'
-  | 'music'
-  | 'notes'
-  | 'file-manager'
-  | 'calculator'
-  | 'calendar'
-  | 'camera-booth';
-
-const isWindowId = (id: string): id is WindowId =>
-  id === 'settings' ||
-  id === 'music' ||
-  id === 'notes' ||
-  id === 'file-manager' ||
-  id === 'calculator' ||
-  id === 'calendar' ||
-  id === 'camera-booth';
-
-const apps: AppItem[] = [
-  { id: 'file-manager', label: 'Files', icon: fileManagerIcon },
-  { id: 'terminal', label: 'Terminal', icon: terminalIcon },
-  { id: 'notes', label: 'Notes', icon: notesIcon },
-  { id: 'music', label: 'Music', icon: musicIcon },
-  { id: 'calculator', label: 'Calculator', icon: calcIcon },
-  { id: 'calendar', label: 'Calendar', icon: calendarIcon },
-  { id: 'settings', label: 'Settings', icon: settingsIcon },
-  { id: 'camera-booth', label: 'Camera Booth', icon: cameraIcon },
-];
-
-const pinned = [
+const windowIds = [ 
+  'settings',
+  'music',
+  'notes',
+  'calendar',
+  'clock',
+  'todo',
   'file-manager',
   'terminal',
-  'notes',
-  'music',
   'calculator',
-  'calendar',
-  'settings',
   'camera-booth',
-];
+] as const;
 
-const dockItems = pinned
-  .map((id) => apps.find((a) => a.id === id))
-  .filter((a): a is AppItem => Boolean(a));
+type WindowId = (typeof windowIds)[number];
+
+const isWindowId = (id: string): id is WindowId => (windowIds as readonly string[]).includes(id);
 
 export default function Home() {
   const [settings, setSettings] = useState<SettingsState>(loadSettings);
@@ -196,12 +158,10 @@ export default function Home() {
 
   const handleItemClick = (id: string) => {
     if (!isWindowId(id)) return;
-
+    
+    setGridOpen(false);
     if (!openWindows.includes(id) || minimized.includes(id) || topWindow !== id) bringToFront(id);
     else minimizeWindow(id);
-    setGridOpen(false);
-    if (!openWindows.includes(id) || topWindow !== id) bringToFront(id);
-    else closeWindow(id);
   };
 
   const openFromGrid = (id: string) => {
@@ -261,13 +221,15 @@ export default function Home() {
       onSelect={(id) => isWindowId(id) && bringToFront(id)}
     /> 
     {openWindows.includes("terminal") && (
+      <div style={winStyle('terminal')}>
         <Terminal
           onClose={() => closeWindow("terminal")}
           zIndex={10 + openWindows.indexOf("terminal")}
           onFocus={() => bringToFront("terminal")}
-          apps={["settings", "clock", "terminal", "todo", "Calendar", "notes", "file-manager","music"]}
+          apps={["settings", "clock", "terminal", "todo", "calendar", "notes", "file-manager","music", "calculator", "camera-booth"]}
           onOpen={(id) => isWindowId(id) && bringToFront(id)}
         />
+        </div>
       )}
     {openWindows.includes('clock') && (
   <div style={winStyle('clock')}>
@@ -306,18 +268,13 @@ export default function Home() {
         </div>
       )}
 
-      {openWindows.includes('Calendar') && (
-        <div style={winStyle('Calendar')}>
-        <Calendar
-          zIndex={10 + openWindows.indexOf('Calendar')}
-          onFocus={() => bringToFront('Calendar')}
-          onClose={() => closeWindow('Calendar')}
       {openWindows.includes('calendar') && (
+        <div style={winStyle('calendar')}>
         <Calendar
           zIndex={10 + openWindows.indexOf('calendar')}
           onFocus={() => bringToFront('calendar')}
           onClose={() => closeWindow('calendar')}
-        />
+          />
         </div>
       )}
 
@@ -350,13 +307,41 @@ export default function Home() {
       )}
 
         {openWindows.includes('file-manager') && (
+          <div style={winStyle('file-manager')}>
   <FileManager
     zIndex={10 + openWindows.indexOf('file-manager')}
     onFocus={() => bringToFront('file-manager')}
     onClose={() => closeWindow('file-manager')}
   />
+  </div>
 )}
 
+
+{openWindows.includes('calculator') && (
+      <div style={winStyle('calculator')}>
+        <Calculator
+          zIndex={10 + openWindows.indexOf('calculator')}
+          focused={topWindow === 'calculator'}
+          onFocus={() => bringToFront('calculator')}
+          onClose={() => closeWindow('calculator')}
+        />
+        </div>
+      )}
+
+
+      {openWindows.includes('camera-booth') && (
+        <div style={winStyle('camera-booth')}>
+        <CameraBooth
+          zIndex={10 + openWindows.indexOf('camera-booth')}
+          onFocus={() => bringToFront('camera-booth')}
+          onClose={() => closeWindow('camera-booth')}
+        />
+        </div>
+      )}
+
+      {gridOpen && (
+        <AppGrid apps={dockItems} onOpen={openFromGrid} onClose={() => setGridOpen(false)} />
+      )}
 
 
     
@@ -395,40 +380,6 @@ export default function Home() {
       )}
       
     {settings.dockStyle === 'bottom' && (
-      
-  
-
-      
-
-      {openWindows.includes('calculator') && (
-        <Calculator
-          zIndex={10 + openWindows.indexOf('calculator')}
-          focused={topWindow === 'calculator'}
-          onFocus={() => bringToFront('calculator')}
-          onClose={() => closeWindow('calculator')}
-        />
-      )}
-
-      {openWindows.includes('file-manager') && (
-        <FileManager
-          zIndex={10 + openWindows.indexOf('file-manager')}
-          onFocus={() => bringToFront('file-manager')}
-          onClose={() => closeWindow('file-manager')}
-        />
-      )}
-
-      {openWindows.includes('camera-booth') && (
-        <CameraBooth
-          zIndex={10 + openWindows.indexOf('camera-booth')}
-          onFocus={() => bringToFront('camera-booth')}
-          onClose={() => closeWindow('camera-booth')}
-        />
-      )}
-
-      {gridOpen && (
-        <AppGrid apps={apps} onOpen={openFromGrid} onClose={() => setGridOpen(false)} />
-      )}
-
       <div className="pointer-events-none absolute left-0 right-0 z-[1000] flex justify-center"
            style={{ bottom: drag.dragging ? 96 : 12, transition: 'bottom 200ms ease-out'}}
       >

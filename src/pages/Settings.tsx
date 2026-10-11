@@ -85,17 +85,13 @@ interface SettingsProps {
   onChange: (patch: Partial<SettingsState>) => void;
   onReset: () => void;
   onClose: () => void;
-  zIndex?: number;
-  onFocus?: () => void;
   onMinimize: () => void;
-}
-
-export default function Settings({ settings, onChange, onReset, onClose, zIndex ,onMinimize, onFocus }: SettingsProps) {
   zIndex: number;
   onFocus: () => void;
 }
 
-export default function Settings({ settings, onChange, onReset, onClose, zIndex, onFocus }: SettingsProps) {
+
+export default function Settings({ settings, onChange, onReset, onClose, zIndex, onFocus , onMinimize}: SettingsProps) {
   const [tab, setTab] = useState<Tab>('wallpaper');
   const [pos, setPos] = useState(() => ({
     x: Math.max(12, (window.innerWidth - WIDTH) / 2),
@@ -121,16 +117,6 @@ export default function Settings({ settings, onChange, onReset, onClose, zIndex,
   return (
     <div
       onMouseDown={onFocus}
-      className="absolute flex flex-col overflow-hidden box-border rounded-xl border border-white/25 text-white shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
-      style={{
-        left: pos.x,
-        top: pos.y,
-        width: WIDTH,
-        height: HEIGHT,
-        maxWidth: 'calc(100vw - 24px)',
-        maxHeight: 'calc(100vh - 24px)',
-        zIndex,
-      }}
       className="absolute box-border flex max-h-[calc(100vh_-_24px)] max-w-[calc(100vw_-_24px)] flex-col overflow-hidden rounded-xl border border-white/25 text-white shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
       style={{ left: pos.x, top: pos.y, width: WIDTH, height: HEIGHT, zIndex }}
     >
@@ -140,26 +126,21 @@ export default function Settings({ settings, onChange, onReset, onClose, zIndex,
       >
         <span className="text-sm">Settings</span>
 
-        <div className="flex items=-center gap-1">
-        <button
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={onMinimize}
-          className="h-7 w-7 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-white"
-        >
-          <Minus size={16}/>
-          onClick={onClose}
-          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-white hover:bg-red-500"
-        >
-          <X size={16} />
-        </button>
-
-        <button
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={onClose}
-        className="h-7 w-7 cursor-pointer rounded-md border-none bg-transparent text-base text-white"
-        >
-          x
-        </button>
+                <div className="flex items-center gap-1">
+          <button
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={onMinimize}
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-white hover:bg-white/10"
+          >
+            <Minus size={16} />
+          </button>
+          <button
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={onClose}
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-white hover:bg-red-500"
+          >
+            <X size={16} />
+          </button>
         </div>
       </div>
 
