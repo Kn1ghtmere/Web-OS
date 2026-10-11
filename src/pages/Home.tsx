@@ -23,6 +23,10 @@ import { loadTasks, saveTasks } from '../components/todo/todoUtils';
 import type { Task } from '../components/todo/todoUtils';
 import NotesWidget from '../components/widgets/NotesWidget';
 import { LayoutGrid } from 'lucide-react';
+import About from "../pages/About";
+import Gallery from "../pages/Gallery";
+import Weather from "../pages/Weather";
+
 
 import AppGrid from './Appgrid';
 
@@ -47,6 +51,9 @@ const windowIds = [
   'terminal',
   'calculator',
   'camera-booth',
+  'weather',
+  'gallery',
+  'about',
 ] as const;
 
 type WindowId = (typeof windowIds)[number];
@@ -205,7 +212,6 @@ export default function Home() {
   };
 
   return (
-    
     <div
       className="fixed inset-0 overflow-hidden text-left font-sans text-white"
       style={{
@@ -215,18 +221,53 @@ export default function Home() {
         backgroundRepeat: "no-repeat",
       }}
     >
-  <Waybar
-      openWindows={openWindows}
-      active={topWindow}
-      onSelect={(id) => isWindowId(id) && bringToFront(id)}
-    /> 
-    {openWindows.includes("terminal") && (
-      <div style={winStyle('terminal')}>
+      <Waybar
+        openWindows={openWindows}
+        active={topWindow}
+        onSelect={(id) => isWindowId(id) && bringToFront(id)}
+        onOpenSettings={() => bringToFront('settings')}
+        onOpenTerminal={() => bringToFront('terminal')}
+        onOpenAbout={() => bringToFront('about')}
+      />
+
+      {openWindows.includes('about') && (
+        <div style={winStyle('about')}>
+          <About
+            onClose={() => closeWindow('about')}
+            zIndex={10 + openWindows.indexOf('about')}
+            onFocus={() => bringToFront('about')}
+          />
+        </div>
+      )}
+
+            {openWindows.includes('gallery') && (
+        <div style={winStyle('gallery')}>
+          <Gallery
+            onClose={() => closeWindow('gallery')}
+            zIndex={10 + openWindows.indexOf('gallery')}
+            onFocus={() => bringToFront('gallery')}
+          />
+        </div>
+      )}
+
+      
+      {openWindows.includes('weather') && (
+        <div style={winStyle('weather')}>
+          <Weather
+            onClose={() => closeWindow('weather')}
+            zIndex={10 + openWindows.indexOf('weather')}
+            onFocus={() => bringToFront('weather')}
+          />
+        </div>
+      )}
+
+      {openWindows.includes('terminal') && (
+        <div style={winStyle('terminal')}>
         <Terminal
           onClose={() => closeWindow("terminal")}
           zIndex={10 + openWindows.indexOf("terminal")}
           onFocus={() => bringToFront("terminal")}
-          apps={["settings", "clock", "terminal", "todo", "calendar", "notes", "file-manager","music", "calculator", "camera-booth"]}
+          apps={["settings", "clock", "terminal", "todo", "calendar", "notes", "file-manager","music", "calculator", "camera-booth", "weather", "gallery", "about"]}
           onOpen={(id) => isWindowId(id) && bringToFront(id)}
         />
         </div>
