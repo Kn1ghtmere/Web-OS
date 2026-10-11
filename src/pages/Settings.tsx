@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react';
+import { useState , useRef } from 'react';
+import type { ChangeEvent, MouseEvent as ReactMouseEvent, ReactNode } from 'react';
 import { X } from 'lucide-react';
 import BackgroundSwitcher from '../components/settings/BacgroundSwitcher';
 import type { SettingsState } from '../components/settings/SettingsConfig';
 import { Minus } from 'lucide-react';
-import { downloadExport } from '../components/settings/exportData';
+import { downloadExport, importData } from '../components/settings/exportData';
 
 type Tab = 'wallpaper' | 'dock' | 'general'| 'data';
 
@@ -12,7 +12,7 @@ const tabs: { id: Tab; label: string }[] = [
   { id: 'wallpaper', label: 'Wallpaper' },
   { id: 'dock', label: 'Dock' },
   { id: 'general', label: 'General' },
-  { id: 'data', label: 'Export Data'},
+  { id: 'data', label: 'Manage Data'},
 ];
 
 const WIDTH = 720;
@@ -95,7 +95,25 @@ interface SettingsProps {
 
 export default function Settings({ settings, onChange, onReset, onClose, zIndex, onFocus , onMinimize}: SettingsProps) {
   const [tab, setTab] = useState<Tab>('wallpaper');
-  const [exportMsg, setExportMsg] = useState('');
+  
+  const [dataMsg, setDataMsg] = useState('');
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleImport = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!confirm('This replaces your current Data with the backup and reloads the page. Export first if you want to keep ur current Data , Continue?')) return;
+
+    try {
+      await importData(file);
+      window.location.reload();
+    } catch (err) {
+      setDataMsg(err instanceof Error ? err.message : 'Import failed');
+    }
+  };
+
+
   const [pos, setPos] = useState(() => ({
     x: Math.max(12, (window.innerWidth - WIDTH) / 2),
     y: Math.max(12, (window.innerHeight - HEIGHT) / 2 - 40),
@@ -228,13 +246,30 @@ export default function Settings({ settings, onChange, onReset, onClose, zIndex,
             <div>
               <Row label="Export data" hint="Download your data saved with the Webos as a JSON file">
                 <button
-                onClick={() => setExportMsg(`Exported ${downloadExport()} items`)}
+                onClick={() => setDataMsg(`Exported ${downloadExport()} items`)}
                 className="cursor-pointer rounded-lg border-none bg-blue-500/[0.85] px-4 py-2 text-sm text-white hover:bg-blue-500"
                 >
                   Export
                 </button>
               </Row>
-              {exportMsg && <div className="mb-3 text-[13px] text-white/75">{exportMsg}</div>}
+
+              <Row label="Import data" hint ="Restore from a backup file. Replaces ur current Data and reloads the page">
+                <button
+                onClick={() => fileRef.current?.click()}
+                className="cursor-pointer rounded-lg border-none bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/20"
+
+                >
+                  Import
+                </button>
+              </Row>
+              <input
+              ref={fileRef}
+              type="file"
+              accept=".json,application/json"
+              onChange={handleImport}
+              className="hidden"
+              />
+              {dataMsg && <div className="mb-3 text-[13px] text-white/75">{dataMsg}</div>}
               <div
               className="text-[13px] leading-[1.5] text-white/55"
               >
