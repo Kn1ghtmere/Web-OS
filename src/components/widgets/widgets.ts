@@ -1,4 +1,4 @@
-export type WidgetType = 'music' | 'todo-recent' | 'todo-task';
+export type WidgetType = 'music' | 'todo-recent' | 'todo-task' | 'notes-recent';
 
 export interface WidgetInstance {
     id: string;

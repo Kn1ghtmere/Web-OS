@@ -19,6 +19,7 @@ import { loadWidgets, saveWidgets } from '../components/widgets/widgets';
 import type { WidgetInstance , WidgetType } from '../components/widgets/widgets';
 import { loadTasks, saveTasks } from '../components/todo/todoUtils';
 import type { Task } from '../components/todo/todoUtils';
+import NotesWidget from '../components/widgets/NotesWidget';
 
 
 import {
@@ -236,6 +237,8 @@ export default function Home() {
           onFocus={() => bringToFront('notes')}
           onMinimize={() => minimizeWindow('notes')}
           onClose={() => closeWindow('notes')}
+          hasWidget={hasWidget}
+          toggleWidget={toggleWidget}
         />
         </div>
       )}
@@ -294,6 +297,9 @@ export default function Home() {
     .map((w) => 
     renderWidget(
       w.id,
+      w.type === 'notes-recent' ? (
+        <NotesWidget onOpen={() => bringToFront('notes')} />
+      ) : (
       <TodoWidget
       mode={w.type === 'todo-recent' ? 'recent' : 'task'}
       tasks={tasks}
@@ -301,6 +307,7 @@ export default function Home() {
       onToggle={toggleTask}
       onOpen={() => bringToFront('todo')}
       />
+      )
     ))}
       
      <WidgetTrash visible={drag.dragging} active={drag.overTrash} />

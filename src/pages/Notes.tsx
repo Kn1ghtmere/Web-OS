@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import { Plus, Trash2, X, Minus } from 'lucide-react';
+import type { WidgetType } from '../components/widgets/widgets';
 
 interface Note {
   id: number;
@@ -39,9 +40,11 @@ interface NotesProps {
   onFocus: () => void;
   onClose: () => void;
   onMinimize: () => void;
+  hasWidget: (id: string) => boolean;
+  toggleWidget: (id: string , type: WidgetType) => void;
 }
 
-export default function Notes({ zIndex, onFocus, onMinimize, onClose }: NotesProps) {
+export default function Notes({ zIndex, onFocus, onMinimize, onClose , hasWidget, toggleWidget}: NotesProps) {
   const [notes, setNotes] = useState<Note[]>(loadNotes);
   const [activeId, setActiveId] = useState<number | null>(() => loadNotes()[0]?.id ?? null);
   const [pos, setPos] = useState({
@@ -52,6 +55,7 @@ export default function Notes({ zIndex, onFocus, onMinimize, onClose }: NotesPro
  useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+      window.dispatchEvent(new Event('webos-notes-changed'));
     } catch {
       return;
     }
@@ -148,6 +152,14 @@ export default function Notes({ zIndex, onFocus, onMinimize, onClose }: NotesPro
             >
               <Plus size={16} />
               New note
+            </button>
+            <button
+            onClick={() => toggleWidget('notes-recent', 'notes-recent')}
+            className={`mt-2 w-full cursor-pointer rounded-md border-none py-1.5 text-xs text-white ${
+              hasWidget('notes-recent') ? 'bg-[#3584e4]' : 'bg-[#3d3d3d] hover:bg-[#4a4a4a]'
+            }`}
+            >
+              Widget: {hasWidget('notes-recent') ? 'On' : 'Off'}
             </button>
           </div>
 
