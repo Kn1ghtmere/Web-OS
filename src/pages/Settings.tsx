@@ -4,13 +4,15 @@ import { X } from 'lucide-react';
 import BackgroundSwitcher from '../components/settings/BacgroundSwitcher';
 import type { SettingsState } from '../components/settings/SettingsConfig';
 import { Minus } from 'lucide-react';
+import { downloadExport } from '../components/settings/exportData';
 
-type Tab = 'wallpaper' | 'dock' | 'general';
+type Tab = 'wallpaper' | 'dock' | 'general'| 'data';
 
 const tabs: { id: Tab; label: string }[] = [
   { id: 'wallpaper', label: 'Wallpaper' },
   { id: 'dock', label: 'Dock' },
   { id: 'general', label: 'General' },
+  { id: 'data', label: 'Export Data'},
 ];
 
 const WIDTH = 720;
@@ -93,6 +95,7 @@ interface SettingsProps {
 
 export default function Settings({ settings, onChange, onReset, onClose, zIndex, onFocus , onMinimize}: SettingsProps) {
   const [tab, setTab] = useState<Tab>('wallpaper');
+  const [exportMsg, setExportMsg] = useState('');
   const [pos, setPos] = useState(() => ({
     x: Math.max(12, (window.innerWidth - WIDTH) / 2),
     y: Math.max(12, (window.innerHeight - HEIGHT) / 2 - 40),
@@ -219,6 +222,25 @@ export default function Settings({ settings, onChange, onReset, onClose, zIndex,
                 Settings are saved in this browser and restored the next time you open the page.
               </div>
             </div>
+          )}
+
+          {tab === 'data' && (
+            <div>
+              <Row label="Export data" hint="Download your data saved with the Webos as a JSON file">
+                <button
+                onClick={() => setExportMsg(`Exported ${downloadExport()} items`)}
+                className="cursor-pointer rounded-lg border-none bg-blue-500/[0.85] px-4 py-2 text-sm text-white hover:bg-blue-500"
+                >
+                  Export
+                </button>
+              </Row>
+              {exportMsg && <div className="mb-3 text-[13px] text-white/75">{exportMsg}</div>}
+              <div
+              className="text-[13px] leading-[1.5] text-white/55"
+              >
+                Only data saved in this browser is included.
+              </div>
+              </div>
           )}
         </div>
       </div>
