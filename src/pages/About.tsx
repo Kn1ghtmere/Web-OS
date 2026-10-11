@@ -58,7 +58,7 @@ export default function About({ onClose, zIndex, onFocus }: AboutProps) {
           <div className="h-3 w-3 rounded-full bg-green-500" />
         </div>
         <span className="text-xs font-mono text-white/70 font-medium">
-          WofOS Creators
+          LarpOS Creators
         </span>
         <div className="w-12" />
       </div>
@@ -82,7 +82,7 @@ export default function About({ onClose, zIndex, onFocus }: AboutProps) {
               : "border-transparent text-white/50 hover:text-white"
           }`}
         >
-          Kn1ghtmere Chandio
+          Kn1ghtmere
         </button>
         <button
           onClick={() => setActiveTab("aleeza")}
@@ -129,7 +129,7 @@ export default function About({ onClose, zIndex, onFocus }: AboutProps) {
 
             <div className="mt-4 w-full rounded-xl border border-blue-900/20 bg-[#16161c] p-4 text-left text-xs leading-relaxed text-white/80">
               <p className="mb-2">
-                Focused on full-stack, developing visually appealing designs, learning new stuff every day about Artificial Intelligence and Machine Learning.
+                Focused on full-stack, developing visually appealing designs, learning new stuff every day about Artificial Intelligence and Machine Learning. i larp the most
               </p>
               <div className="flex items-center justify-between pt-2 border-t border-white/10 font-mono text-[11px]">
                 <span className="text-white/50">Website</span>
@@ -197,7 +197,7 @@ export default function About({ onClose, zIndex, onFocus }: AboutProps) {
 
             <div className="mt-4 w-full rounded-xl border border-white/20 bg-[#16161c] p-4 text-left text-xs leading-relaxed text-white/80">
               <p className="mb-2">
-                Hi , im kn1ghtmere and i like to code smtimes, im kinda new to it , but im still learning alot. im majoring in cyber security , and my fav color is black :) andddd btwww yk whattttt I LOVE ALEEZA ZAHRA
+                Hi , im kn1ghtmere and i like to code smtimes, im kinda new to it , but im still learning alot. im majoring in cyber security , and my fav color is black :) and leeza is cute
               </p>
               <div className="flex items-center justify-between pt-2 border-t border-white/10 font-mono text-[11px]">
                 <span className="text-white/50">Website</span>
@@ -250,7 +250,8 @@ export default function About({ onClose, zIndex, onFocus }: AboutProps) {
               Aleeza Zahra
             </h2>
             <p className="mt-0.5 text-xs text-pink-300/70">
-              Full Stack Developer and AI/ML enthusiast
+              18 y/o high school student aspiring AI/ML engineer , trying to build stuff that creates an impact.
+
             </p>
 
             <div className="mt-3 flex flex-wrap justify-center gap-1.5">
@@ -266,7 +267,7 @@ export default function About({ onClose, zIndex, onFocus }: AboutProps) {
 
             <div className="mt-4 w-full rounded-xl border border-pink-500/20 bg-[#16161c] p-4 text-left text-xs leading-relaxed text-white/80">
               <p className="mb-2">
-                Focused on Full Stack and AI. Love to build stuff that's cool clean and simple. Like to learn new stuff. and yeah i love coffee ramen and I LOVE TO GOON
+                Focused on Full Stack and AI. Love to build stuff that's cool clean and simple. Like to learn new stuff. and yeah i love coffee ramen and I like to rice my linux setup, read penguin classics and touching grass sometimes
               </p>
               <div className="flex items-center justify-between pt-2 border-t border-white/10 font-mono text-[11px]">
                 <span className="text-white/50">Website</span>

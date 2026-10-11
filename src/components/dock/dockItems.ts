@@ -7,6 +7,8 @@ import settingsIcon from '../../assets/icons/settings-icon.svg';
 import terminalIcon from '../../assets/icons/terminal.svg';
 import clock from "../../assets/icons/clock.svg";
 import cameraIcon from "../../assets/icons/camera.png";
+import weather from "../../assets/icons/weather.png";
+import gallery from "../../assets/icons/gallery.webp"
 
 
 export interface DockItem {
@@ -26,5 +28,8 @@ export const dockItems: DockItem[] = [
   { id: 'notes' , label: 'Notes', icon: todoIcon},
   { id: "clock", label: "Clock", icon: clock },
   { id: 'calculator', label: 'Calculator', icon: calcIcon},
-  { id: 'camera-booth', label: 'Camera Booth', icon: cameraIcon}
+  { id: 'camera-booth', label: 'Camera Booth', icon: cameraIcon},
+  { id: 'gallery', label: 'Gallery', icon: gallery},
+  { id: 'weather', label:'weather', icon: weather},
+
 ];
