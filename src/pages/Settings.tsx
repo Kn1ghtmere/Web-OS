@@ -90,10 +90,11 @@ interface SettingsProps {
   onMinimize: () => void;
   zIndex: number;
   onFocus: () => void;
+    onShowTutorial: () => void;
 }
 
 
-export default function Settings({ settings, onChange, onReset, onClose, zIndex, onFocus , onMinimize}: SettingsProps) {
+export default function Settings({ settings, onChange, onReset, onClose, zIndex, onFocus , onMinimize, onShowTutorial}: SettingsProps) {
   const [tab, setTab] = useState<Tab>('wallpaper');
   
   const [dataMsg, setDataMsg] = useState('');
@@ -229,6 +230,14 @@ export default function Settings({ settings, onChange, onReset, onClose, zIndex,
           {tab === 'general' && (
             <div>
               <Row label="Reset settings" hint="Restore the wallpaper and dock to their defaults">
+             <Row label="Tutorial" hint="Replay the welcome tour">
+                <button
+                  onClick={onShowTutorial}
+                  className="cursor-pointer rounded-lg border-none bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/20"
+                >
+                  Show
+                </button>
+              </Row>
                 <button
                   onClick={onReset}
                   className="cursor-pointer rounded-lg border-none bg-red-500/80 px-4 py-2 text-sm text-white hover:bg-red-500"

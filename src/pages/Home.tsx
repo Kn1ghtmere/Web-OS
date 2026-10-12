@@ -26,6 +26,7 @@ import { LayoutGrid } from 'lucide-react';
 import About from "../pages/About";
 import Gallery from "../pages/Gallery";
 import Weather from "../pages/Weather";
+import Tutorial from "../components/tutorial/Tutorial";
 
 
 import AppGrid from './Appgrid';
@@ -39,6 +40,7 @@ import {
 
 import type { SettingsState } from '../components/settings/SettingsConfig';
 
+const TUTORIAL_KEY = 'webos_tutorial_seen';
 
 const windowIds = [ 
   'settings',
@@ -72,6 +74,23 @@ export default function Home() {
   const [widgets, setWidgets] = useState<WidgetInstance[]>(loadWidgets);
   const [drag, setDrag] = useState({ dragging: false , overTrash: false});
   const [tabOrder, setTabOrder] = useState<WindowId[]>([]);
+
+  const [tutorialOpen, setTutorialOpen] = useState(() => {
+    try {
+      return localStorage.getItem(TUTORIAL_KEY) === null;
+    } catch {
+      return false;
+    }
+  });
+
+  const closeTutorial = () => {
+    setTutorialOpen(false);
+    try {
+      localStorage.setItem(TUTORIAL_KEY, '1');
+    } catch {
+      return;
+    }
+  };
 
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -334,6 +353,7 @@ export default function Home() {
        onMinimize={() => minimizeWindow('settings')}
        zIndex={10 + openWindows.indexOf('settings')}
        onFocus={() => bringToFront('settings')}
+       onShowTutorial={() => setTutorialOpen(true)}
     />
         </div>
 )}
@@ -553,6 +573,11 @@ export default function Home() {
         </div>
       </div>
       )}
+
+
+
+         {tutorialOpen && <Tutorial onClose={closeTutorial} />}
+
     </div>
   );
 }
