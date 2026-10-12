@@ -1,7 +1,7 @@
-import { useEffect , useState } from 'react';
+import { useState } from 'react';
+import type { MouseEvent as ReactMouseEvent } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { AppWindow, CircleDot , Keyboard, LayoutGrid, PanelBottom, Pin , Settings, Sparkles} from 'lucide-react';
-
+import { AppWindow, ChevronDown, ChevronUp, CircleDot, Keyboard, LayoutGrid, PanelBottom, Pin, Settings, Sparkles, X } from 'lucide-react';
 
 interface Step {
     icon: LucideIcon;
@@ -96,96 +96,125 @@ const steps: Step[] = [
     
 ];
 
-export default function Tutorial({onClose} : { onClose: () => void}) {
-    const [i, setI] = useState(0);
-    const last = i === steps.length -1;
-    const step = steps[i];
-    const Icon = step.icon;
+export default function Tutorial({ onClose }: { onClose: () => void }) {
+  const [i, setI] = useState(0);
+  const [collapsed, setCollapsed] = useState(false);
+  const [pos, setPos] = useState({ x: 24, y: 64 });
 
+  const last = i === steps.length - 1;
+  const step = steps[i];
+  const Icon = step.icon;
 
-    const next = () => (last ? onClose() : setI(i+1));
-    const back = () => setI((n) => Math.max(0, n-1));
+  const next = () => (last ? onClose() : setI(i + 1));
+  const back = () => setI((n) => Math.max(0, n - 1));
 
+  const startDrag = (e: ReactMouseEvent) => {
+    const offX = e.clientX - pos.x;
+    const offY = e.clientY - pos.y;
 
-    useEffect(() => {
-        const onKey = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
-            if (e.key === 'ArrowRight') next();
-            if (e.key === 'ArrowLeft') back();
-        };
-        window.addEventListener('keydown', onKey);
-        return () => window.removeEventListener('keydown', onKey);
-    });
+    const move = (ev: MouseEvent) => {
+      setPos({ x: ev.clientX - offX, y: Math.max(0, ev.clientY - offY) });
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
 
-    return (
-        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/55">
-      <div className="w-[460px] max-w-[calc(100vw_-_24px)] rounded-2xl border border-white/25 bg-[rgba(24,26,32,0.97)] p-7 text-white shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/[0.85]">
-          <Icon size={26} />
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+
+  return (
+    <div
+      className="absolute z-[1050] w-[380px] max-w-[calc(100vw_-_24px)] overflow-hidden rounded-xl border border-white/25 bg-[rgba(24,26,32,0.75)] text-white shadow-[0_20px_60px_rgba(0,0,0,0.5)] backdrop-blur-[16px]"
+      style={{ left: pos.x, top: pos.y }}
+    >
+      <div
+        onMouseDown={startDrag}
+        className="flex h-10 cursor-grab select-none items-center justify-between bg-[rgba(17,20,27,0.6)] pl-4 pr-2 text-sm active:cursor-grabbing"
+      >
+        <span>
+          Tour · {i + 1}/{steps.length}
+        </span>
+        <div className="flex items-center gap-1">
+          <button
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={() => setCollapsed((c) => !c)}
+            title={collapsed ? 'Expand' : 'Collapse'}
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-white hover:bg-white/10"
+          >
+            {collapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+          </button>
+          <button
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={onClose}
+            title="Close tour"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-white hover:bg-red-500"
+          >
+            <X size={16} />
+          </button>
         </div>
+      </div>
 
-        <h2 className="mb-3 text-xl font-semibold">{step.title}</h2>
-
-        <ul className="m-0 flex min-h-[170px] list-none flex-col gap-2.5 p-0 text-sm leading-relaxed text-white/75">
-          {step.points.map((p) => (
-            <li key={p} className="flex gap-2.5">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
-              <span>{p}</span>
-            </li>
-          ))}
-        </ul>
-
-
-
-              
-              <div className="mt-6 flex items-center justify-between">
-                <div className="flex gap-1.5">
-                    {steps.map((_,n) => (
-                    <button
-                        key={n}
-                        onClick={() => setI(n)}
-                        aria-label={`Go to step ${n + 1}`}
-                        className={`h-2 cursor-pointer rounded-full border-none p-0 transition-all ${
-                            n === i ? 'w-5 bg-blue-400' : 'w-2 bg-white/25 hover:bg-white/40'}`}
-                        />
-                    
-                        
-                    ))}
-                </div>
-
-              
-              <div className="flex items-center gap-2">
-                {!last && (
-                    <button 
-                    onClick={onClose}
-                    className="cursor-pointer rounded-lg border-none bg-transparent px-3 py-2 text-sm text-white/55 hover: text-white"
-                    >
-                        Skip
-                    </button>
-                )}
-                {i > 0 && (
-                    <button
-                    onClick={back}
-                    className="cursor-pointer rounded-lg border-none bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/20"
-                    >
-                        Back
-                    </button>
-                )}
-                <button
-                onClick={next}
-                className="cursor-pointer rounded-lg border-none bg-blue-500/[0.85] px-4 py-2 text-sm text-white hover:bg-blue-500"
-                >
-                    {last ? 'Get started' : 'Next'}
-                </button>
-              </div>
-
-
-              </div>
-          
-
-
-
+      {!collapsed && (
+        <div className="p-5">
+          <div className="mb-3 flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/[0.85]">
+              <Icon size={22} />
             </div>
+            <h2 className="m-0 text-lg font-semibold">{step.title}</h2>
+          </div>
+
+          <ul className="m-0 flex h-[230px] list-none flex-col gap-2 overflow-y-auto p-0 pr-1 text-sm leading-relaxed text-white/75 [color-scheme:dark]">
+            {step.points.map((p) => (
+              <li key={p} className="flex gap-2.5">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
+                <span>{p}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-4 flex items-center justify-between">
+            <div className="flex gap-1.5">
+              {steps.map((_, n) => (
+                <button
+                  key={n}
+                  onClick={() => setI(n)}
+                  aria-label={`Go to step ${n + 1}`}
+                  className={`h-2 cursor-pointer rounded-full border-none p-0 transition-all ${
+                    n === i ? 'w-5 bg-blue-400' : 'w-2 bg-white/25 hover:bg-white/40'
+                  }`}
+                />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              {!last && (
+                <button
+                  onClick={onClose}
+                  className="cursor-pointer rounded-lg border-none bg-transparent px-2.5 py-2 text-sm text-white/55 hover:text-white"
+                >
+                  Skip
+                </button>
+              )}
+              {i > 0 && (
+                <button
+                  onClick={back}
+                  className="cursor-pointer rounded-lg border-none bg-white/10 px-3 py-2 text-sm text-white hover:bg-white/20"
+                >
+                  Back
+                </button>
+              )}
+              <button
+                onClick={next}
+                className="cursor-pointer rounded-lg border-none bg-blue-500/[0.85] px-3 py-2 text-sm text-white hover:bg-blue-500"
+              >
+                {last ? 'Done' : 'Next'}
+              </button>
+            </div>
+          </div>
         </div>
-    );
+      )}
+    </div>
+  );
 }
