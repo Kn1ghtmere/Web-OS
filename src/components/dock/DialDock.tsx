@@ -21,11 +21,12 @@ interface DialDockProps {
     magnificationAmount: number;
     onOpenGrid: () => void;
     gridOpen: boolean;
+    onDoubleClick: () => void;
 
 }
 const STEP = (35 * Math.PI) / 180;
 
-export default function DialDock({ items, iconSize, onItemClick, showLabels, openIds, minimizedIds, opacity, magnification, magnificationAmount, onOpenGrid, gridOpen }: DialDockProps) {
+export default function DialDock({ items, iconSize, onItemClick, showLabels, openIds, minimizedIds, opacity, magnification, magnificationAmount, onOpenGrid, gridOpen, onDoubleClick}: DialDockProps) {
 
     const [active, setActive] = useState(0);
     const [hovered, setHovered] = useState(false);
@@ -56,6 +57,7 @@ export default function DialDock({ items, iconSize, onItemClick, showLabels, ope
         >
             {}
          <div
+         onDoubleClick={onDoubleClick}
         className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30 shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-[16px] transition-all duration-200"
         style={{ width: radius * 2 + iconSize, height: radius * 2 + iconSize , background:`rgba(255,255,255,${opacity / 100})`,}}
       />

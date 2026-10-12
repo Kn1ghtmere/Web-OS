@@ -80,6 +80,13 @@ export default function Home() {
   }, [settings]);
 
 
+  const toggleDockStyle = () => {
+    setSettings((prev) => ({
+      ...prev,
+      dockStyle: prev.dockStyle === 'dial' ? 'bottom' : 'dial',
+    }));
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.altKey && e.key.toLowerCase() === 't') {
@@ -454,6 +461,7 @@ export default function Home() {
          magnificationAmount={settings.magnificationAmount}
          onOpenGrid={() => setGridOpen((open) => !open)}
          gridOpen={gridOpen}
+         onDoubleClick={toggleDockStyle}
          />
       )}
       
@@ -462,6 +470,11 @@ export default function Home() {
            style={{ bottom: drag.dragging ? 96 : 12, transition: 'bottom 200ms ease-out'}}
       >
         <div
+        onDoubleClick={(e) => {
+          if (e.target === e.currentTarget) {
+            toggleDockStyle();
+          }
+        }}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           className="pointer-events-auto flex items-end rounded-[26px] border border-white/30 px-[18px] pb-[14px] pt-[10px] shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-[16px]"
